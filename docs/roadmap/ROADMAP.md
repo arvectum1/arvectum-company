@@ -5,7 +5,7 @@
 Создано: `2026-08-19`
 Обновлено: `2026-08-22`
 Владелец: `ООО «Арвектум»`
-Репозиторий: `arvectum/arvectum-company`
+Репозиторий: `arvectum1/arvectum-company`
 Текущее каноническое действие: `AC-505 — Supervised real-operation proof — external evidence wait`
 Параллельное экономическое направление: `AC-507 — Complete / PASS — CONTINUE WITH CHANGE / bounded evidence phase`
 Завершено параллельно: `AC-506 — Complete / PASS`
