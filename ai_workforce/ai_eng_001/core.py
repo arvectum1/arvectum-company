@@ -5,6 +5,8 @@ import os
 import re
 import shlex
 import shutil
+import selectors
+import signal
 import subprocess
 import sys
 import time
@@ -96,6 +98,7 @@ class Config:
     llm_model: str | None = None
     llm_api_key_env: str = "AI_ENG_LLM_API_KEY"
     watch_interval_seconds: int = 30
+    executor_idle_timeout_seconds: int = 600
 
     @classmethod
     def load(cls, path: Path | None) -> "Config":
@@ -116,6 +119,7 @@ class Config:
             llm_model=raw.get("llm_model"),
             llm_api_key_env=str(raw.get("llm_api_key_env", "AI_ENG_LLM_API_KEY")),
             watch_interval_seconds=int(raw.get("watch_interval_seconds", 30)),
+            executor_idle_timeout_seconds=int(raw.get("executor_idle_timeout_seconds", 600)),
         )
 
 
@@ -124,6 +128,11 @@ class CommandResult:
     returncode: int
     stdout: str
     stderr: str
+
+
+@dataclass
+class ExecutorResult(CommandResult):
+    termination_reason: str | None = None
 
 
 def run_command(args: list[str] | str, cwd: Path, timeout: int, shell: bool = False, env: dict[str, str] | None = None) -> CommandResult:
@@ -150,6 +159,53 @@ def require_clean_repo(repo: Path) -> None:
 
 def utcstamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def iso_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def write_runtime_status(run_dir: Path, **status: Any) -> None:
+    target = run_dir / "runtime-status.json"
+    temporary = run_dir / ".runtime-status.json.tmp"
+    temporary.write_text(json.dumps(status, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temporary.replace(target)
+
+
+def runtime_status(
+    run_id: str,
+    task: Task,
+    phase: str,
+    started_at: str,
+    phase_started_at: str,
+    started: float,
+    last_activity_at: str,
+    idle_timeout_seconds: int,
+    executor_pid: int | None = None,
+    termination_reason: str | None = None,
+    executor_returncode: int | None = None,
+    branch: str | None = None,
+    baseline_sha: str | None = None,
+    worktree: Path | None = None,
+) -> dict[str, Any]:
+    return {
+        "run_id": run_id,
+        "task_id": task.task_id,
+        "phase": phase,
+        "executor_pid": executor_pid,
+        "started_at": started_at,
+        "phase_started_at": phase_started_at,
+        "updated_at": iso_now(),
+        "last_activity_at": last_activity_at,
+        "elapsed_seconds": round(time.monotonic() - started, 3),
+        "hard_timeout_seconds": task.timeout_seconds,
+        "idle_timeout_seconds": idle_timeout_seconds,
+        "termination_reason": termination_reason,
+        "executor_returncode": executor_returncode,
+        "branch": branch,
+        "baseline_sha": baseline_sha,
+        "worktree": str(worktree) if worktree else None,
+    }
 
 
 def policy_header() -> str:
@@ -241,12 +297,146 @@ def write_report(run_dir: Path, report: dict[str, Any]) -> None:
     (run_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def terminate_executor_group(process: subprocess.Popen[bytes], grace_seconds: float = 3.0) -> None:
+    """Stop only the session created for this executor, never unrelated OpenCode processes."""
+    if process.poll() is not None:
+        return
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    deadline = time.monotonic() + grace_seconds
+    while process.poll() is None and time.monotonic() < deadline:
+        time.sleep(0.05)
+    if process.poll() is None:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+
+
+def run_streaming_executor(
+    args: list[str],
+    cwd: Path,
+    hard_timeout_seconds: int,
+    idle_timeout_seconds: int,
+    run_dir: Path,
+    status_writer: Any,
+    env: dict[str, str],
+) -> ExecutorResult:
+    if idle_timeout_seconds <= 0:
+        raise AgentError("executor_idle_timeout_seconds must be greater than zero")
+
+    stdout_path = run_dir / "executor.stdout.txt"
+    stderr_path = run_dir / "executor.stderr.txt"
+    started = time.monotonic()
+    last_activity = started
+    termination_reason: str | None = None
+    stdout_chunks: list[bytes] = []
+    stderr_chunks: list[bytes] = []
+
+    with stdout_path.open("wb") as stdout_file, stderr_path.open("wb") as stderr_file:
+        process = subprocess.Popen(
+            args,
+            cwd=str(cwd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+            env=env,
+        )
+        assert process.stdout is not None and process.stderr is not None
+        selector = selectors.DefaultSelector()
+        for stream, file, chunks in ((process.stdout, stdout_file, stdout_chunks), (process.stderr, stderr_file, stderr_chunks)):
+            os.set_blocking(stream.fileno(), False)
+            selector.register(stream, selectors.EVENT_READ, (file, chunks))
+        last_heartbeat = 0.0
+        try:
+            while selector.get_map() or process.poll() is None:
+                now = time.monotonic()
+                if now - started >= hard_timeout_seconds:
+                    termination_reason = "executor_hard_timeout"
+                    terminate_executor_group(process)
+                elif now - last_activity >= idle_timeout_seconds:
+                    termination_reason = "executor_idle_timeout"
+                    terminate_executor_group(process)
+
+                # Poll frequently enough that a newly spawned executor can initialize before a short test timeout.
+                events = selector.select(timeout=0.2)
+                for key, _ in events:
+                    stream = key.fileobj
+                    file, chunks = key.data
+                    try:
+                        data = os.read(stream.fileno(), 65536)
+                    except BlockingIOError:
+                        continue
+                    if data:
+                        file.write(data)
+                        file.flush()
+                        chunks.append(data)
+                        last_activity = time.monotonic()
+                        status_writer(process.pid, True, termination_reason)
+                    else:
+                        selector.unregister(stream)
+                        stream.close()
+
+                now = time.monotonic()
+                if now - last_heartbeat >= 2.0:
+                    status_writer(process.pid, False, termination_reason)
+                    last_heartbeat = now
+                if termination_reason and process.poll() is not None and not selector.get_map():
+                    break
+        except KeyboardInterrupt:
+            termination_reason = "supervisor_interrupted"
+            terminate_executor_group(process)
+        finally:
+            if process.poll() is None:
+                process.wait(timeout=5)
+            for key in list(selector.get_map().values()):
+                stream = key.fileobj
+                file, chunks = key.data
+                while True:
+                    try:
+                        data = os.read(stream.fileno(), 65536)
+                    except BlockingIOError:
+                        break
+                    if not data:
+                        break
+                    file.write(data)
+                    chunks.append(data)
+                file.flush()
+                selector.unregister(stream)
+                stream.close()
+            selector.close()
+
+    return ExecutorResult(
+        returncode=process.returncode if process.returncode is not None else -1,
+        stdout=b"".join(stdout_chunks).decode("utf-8", errors="replace"),
+        stderr=b"".join(stderr_chunks).decode("utf-8", errors="replace"),
+        termination_reason=termination_reason,
+    )
+
+
 def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
     task = Task.from_json(task_path)
     run_id = f"{utcstamp()}-{task.task_id}"
     run_dir = config.state_dir / "runs" / run_id
     run_dir.mkdir(parents=True, exist_ok=False)
     (run_dir / "task.json").write_text(task_path.read_text(encoding="utf-8"), encoding="utf-8")
+    started = time.monotonic()
+    started_at = iso_now()
+    phase_started_at = started_at
+    last_activity_at = started_at
+
+    def status(phase: str, *, pid: int | None = None, reason: str | None = None, returncode: int | None = None,
+               branch: str | None = None, baseline_sha: str | None = None, worktree: Path | None = None) -> None:
+        nonlocal phase_started_at
+        phase_started_at = iso_now()
+        write_runtime_status(run_dir, **runtime_status(
+            run_id, task, phase, started_at, phase_started_at, started, last_activity_at,
+            config.executor_idle_timeout_seconds, pid, reason, returncode, branch, baseline_sha, worktree,
+        ))
+
+    status("ADMISSION")
 
     escalation = task.escalation_reasons()
     if escalation:
@@ -256,10 +446,13 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
             "changed_paths": [], "checks": [],
             "owner_next_action": "Resolve or explicitly re-scope the flagged boundary, then submit a new task record.",
         }
+        status("NEEDS_OWNER")
         write_report(run_dir, report)
         return report
 
     try:
+        if config.executor_idle_timeout_seconds <= 0:
+            raise AgentError("executor_idle_timeout_seconds must be greater than zero")
         require_clean_repo(task.repository)
         head = git(task.repository, "rev-parse", task.base_ref)
         if head.returncode != 0:
@@ -271,6 +464,7 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
         add = git(task.repository, "worktree", "add", "-b", branch, str(worktree), baseline_sha, timeout=180)
         if add.returncode != 0:
             raise AgentError(add.stderr.strip() or "git worktree add failed")
+        status("WORKTREE_READY", branch=branch, baseline_sha=baseline_sha, worktree=worktree)
 
         plan = llm_plan(config, task)
         if plan:
@@ -287,49 +481,71 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
         cmd += [prompt]
         env = os.environ.copy()
         env.pop(config.llm_api_key_env, None)
-        started = time.monotonic()
-        executor = run_command(cmd, worktree, task.timeout_seconds, env=env)
+
+        def executor_status(pid: int, active: bool, reason: str | None) -> None:
+            nonlocal last_activity_at
+            if active:
+                last_activity_at = iso_now()
+            write_runtime_status(run_dir, **runtime_status(
+                run_id, task, "EXECUTOR_RUNNING", started_at, phase_started_at, started, last_activity_at,
+                config.executor_idle_timeout_seconds, pid, reason, None, branch, baseline_sha, worktree,
+            ))
+
+        phase_started_at = iso_now()
+        last_activity_at = phase_started_at
+        executor = run_streaming_executor(
+            cmd, worktree, task.timeout_seconds, config.executor_idle_timeout_seconds, run_dir, executor_status, env,
+        )
         duration = round(time.monotonic() - started, 3)
-        (run_dir / "executor.stdout.txt").write_text(executor.stdout, encoding="utf-8")
-        (run_dir / "executor.stderr.txt").write_text(executor.stderr, encoding="utf-8")
 
         paths = changed_paths(worktree)
         checks: list[dict[str, Any]] = []
         reasons: list[str] = []
         checks.append({"name": "executor_exit", "ok": executor.returncode == 0, "returncode": executor.returncode})
-        if executor.returncode != 0:
-            reasons.append("executor returned non-zero status")
-        checks.append({"name": "changed_files_present", "ok": bool(paths), "count": len(paths)})
-        if not paths:
-            reasons.append("executor produced no file changes")
         for p in paths:
             ok, reason = path_allowed(p, task)
             checks.append({"name": f"path:{p}", "ok": ok})
             if reason:
                 reasons.append(reason)
-        diffcheck = git(worktree, "diff", "--check")
-        checks.append({"name": "git_diff_check", "ok": diffcheck.returncode == 0})
-        if diffcheck.returncode != 0:
-            reasons.append(diffcheck.stdout.strip() or diffcheck.stderr.strip() or "git diff --check failed")
-        for index, test_cmd in enumerate(task.test_commands, 1):
-            tr = run_command(test_cmd, worktree, min(task.timeout_seconds, 1800), shell=True)
-            (run_dir / f"test-{index}.stdout.txt").write_text(tr.stdout, encoding="utf-8")
-            (run_dir / f"test-{index}.stderr.txt").write_text(tr.stderr, encoding="utf-8")
-            checks.append({"name": f"test:{test_cmd}", "ok": tr.returncode == 0, "returncode": tr.returncode})
-            if tr.returncode != 0:
-                reasons.append(f"test failed: {test_cmd}")
+        if executor.termination_reason:
+            reasons.append(executor.termination_reason)
+        elif executor.returncode != 0:
+            reasons.append("executor_nonzero_exit")
+        else:
+            status("POST_EXECUTOR_CHECKS", branch=branch, baseline_sha=baseline_sha, worktree=worktree)
+            checks.append({"name": "changed_files_present", "ok": bool(paths), "count": len(paths)})
+            if not paths:
+                reasons.append("executor produced no file changes")
+            diffcheck = git(worktree, "diff", "--check")
+            checks.append({"name": "git_diff_check", "ok": diffcheck.returncode == 0})
+            if diffcheck.returncode != 0:
+                reasons.append(diffcheck.stdout.strip() or diffcheck.stderr.strip() or "git diff --check failed")
+            status("TESTING", branch=branch, baseline_sha=baseline_sha, worktree=worktree)
+            for index, test_cmd in enumerate(task.test_commands, 1):
+                tr = run_command(test_cmd, worktree, min(task.timeout_seconds, 1800), shell=True)
+                (run_dir / f"test-{index}.stdout.txt").write_text(tr.stdout, encoding="utf-8")
+                (run_dir / f"test-{index}.stderr.txt").write_text(tr.stderr, encoding="utf-8")
+                checks.append({"name": f"test:{test_cmd}", "ok": tr.returncode == 0, "returncode": tr.returncode})
+                if tr.returncode != 0:
+                    reasons.append(f"test failed: {test_cmd}")
 
-        state = "READY_FOR_OWNER" if all(c["ok"] for c in checks) else "BLOCKED"
+        executor_reason = executor.termination_reason or (
+            "executor_nonzero_exit" if executor.returncode != 0 else None
+        )
+        state = "READY_FOR_OWNER" if not executor_reason and executor.returncode == 0 and all(c["ok"] for c in checks) else "BLOCKED"
         report = {
             "run_id": run_id, "task_id": task.task_id, "repository": str(task.repository), "worktree": str(worktree),
             "branch": branch, "baseline_sha": baseline_sha, "state": state,
             "summary": "Bounded engineering execution completed and is ready for human review." if state == "READY_FOR_OWNER" else "Execution completed but one or more required checks failed.",
             "reasons": reasons, "changed_paths": paths, "checks": checks, "duration_seconds": duration,
+            "executor_returncode": executor.returncode, "executor_termination_reason": executor_reason,
             "owner_next_action": (
                 f"Review `{worktree}` and `{run_dir / 'report.md'}`. If acceptable, run `python3 -m ai_workforce.ai_eng_001.cli approve {shlex.quote(run_id)}` from the arvectum-company checkout."
                 if state == "READY_FOR_OWNER" else "Inspect the report/logs. Correct the task or environment; do not promote this worktree."
             ),
         }
+        status(state, reason=executor_reason, returncode=executor.returncode,
+               branch=branch, baseline_sha=baseline_sha, worktree=worktree)
         write_report(run_dir, report)
         return report
     except (AgentError, subprocess.TimeoutExpired) as exc:
@@ -339,6 +555,7 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
             "changed_paths": [], "checks": [],
             "owner_next_action": "Inspect the task/environment and submit a corrected task. Do not infer success.",
         }
+        status("BLOCKED")
         write_report(run_dir, report)
         return report
 
@@ -378,6 +595,10 @@ def doctor(config: Config) -> dict[str, Any]:
         "python": {"ok": sys.version_info >= (3, 11), "value": sys.version.split()[0]},
         "git": {"ok": shutil.which("git") is not None, "value": shutil.which("git")},
         "executor": {"ok": shutil.which(config.executor_cmd[0]) is not None, "value": shutil.which(config.executor_cmd[0])},
+        "executor_idle_timeout": {
+            "ok": config.executor_idle_timeout_seconds > 0,
+            "value": config.executor_idle_timeout_seconds,
+        },
     }
     if config.llm_mode == "openai_compatible":
         checks["manager_llm_config"] = {
@@ -400,15 +621,27 @@ def list_runs(config: Config, limit: int = 20) -> dict[str, Any]:
     runs_dir = config.state_dir / "runs"
     items: list[dict[str, Any]] = []
     if runs_dir.exists():
-        for report_path in sorted(runs_dir.glob("*/report.json"), reverse=True)[:limit]:
+        for run_dir in sorted((p for p in runs_dir.iterdir() if p.is_dir()), reverse=True)[:limit]:
+            report_path = run_dir / "report.json"
+            status_path = run_dir / "runtime-status.json"
             try:
-                report = json.loads(report_path.read_text(encoding="utf-8"))
+                if report_path.exists():
+                    report = json.loads(report_path.read_text(encoding="utf-8"))
+                    items.append({
+                        "run_id": report.get("run_id"), "task_id": report.get("task_id"), "state": report.get("state"),
+                        "branch": report.get("branch"), "report": str(report_path),
+                    })
+                elif status_path.exists():
+                    status = json.loads(status_path.read_text(encoding="utf-8"))
+                    items.append({
+                        "run_id": status.get("run_id"), "task_id": status.get("task_id"),
+                        "state": status.get("phase"), "phase": status.get("phase"),
+                        "executor_pid": status.get("executor_pid"), "elapsed_seconds": status.get("elapsed_seconds"),
+                        "last_activity_at": status.get("last_activity_at"),
+                        "termination_reason": status.get("termination_reason"), "report": None,
+                    })
             except (OSError, json.JSONDecodeError):
                 continue
-            items.append({
-                "run_id": report.get("run_id"), "task_id": report.get("task_id"), "state": report.get("state"),
-                "branch": report.get("branch"), "report": str(report_path),
-            })
     return {"runs": items}
 
 

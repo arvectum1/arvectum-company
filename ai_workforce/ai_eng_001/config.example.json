@@ -7,5 +7,6 @@
   "llm_base_url": null,
   "llm_model": null,
   "llm_api_key_env": "AI_ENG_LLM_API_KEY",
+  "executor_idle_timeout_seconds": 600,
   "watch_interval_seconds": 30
 }
