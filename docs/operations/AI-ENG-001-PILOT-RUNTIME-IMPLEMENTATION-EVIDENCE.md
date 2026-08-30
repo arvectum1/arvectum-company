@@ -1,6 +1,6 @@
 # AI-ENG-001 Pilot Runtime Implementation Evidence
 
-Status: `Implementation complete / deployment pending`
+Status: `Implementation complete / Mac mini deployment PASS / real task pending`
 Date: `2026-08-30`
 
 Implemented artifacts:
@@ -15,7 +15,7 @@ Implemented artifacts:
 - `.github/workflows/ai-eng-001-ci.yml` — independent CI validation;
 - `docs/operations/AI-ENG-001-RUNTIME.md` — operator/runtime reference.
 
-Local implementation validation:
+Initial implementation validation:
 
 ```text
 PYTHONPATH=. python3 -m unittest discover -s tests -v
@@ -23,28 +23,46 @@ Ran 4 tests
 OK
 ```
 
-Additional local validation:
+Additional initial validation:
 
 - Python modules compiled with `py_compile`;
-- macOS deployment scripts passed `bash -n` syntax validation.
+- macOS deployment scripts passed `bash -n` syntax validation;
+- GitHub Actions run `33299430866`: `completed / success`.
 
-Independent GitHub Actions validation:
+## Mac mini deployment evidence
 
-- workflow: `AI-ENG-001 CI`;
-- run: `33299430866`;
-- head: `d77e0f32d19e417b1cb556aad185845a8a1e72c3`;
-- result: `completed / success`.
+The Owner-controlled Mac mini deployment has now been completed and recorded in:
 
-The test suite uses a deterministic fake coding executor to prove runner mechanics without pretending that a model's engineering quality was tested.
+`docs/operations/AC-605-MAC-MINI-DEPLOYMENT-EVIDENCE.md`.
+
+Observed local deployment evidence reported from that environment:
+
+- AI-ENG-001 running on the Mac mini;
+- `py_compile`: PASS;
+- targeted tests: `4/4 PASS`;
+- synthetic smoke: `READY_FOR_OWNER`;
+- smoke checks: `5/5 PASS`;
+- no real product task executed;
+- no autonomous merge/release/deploy/customer effect.
+
+The deployment uncovered one portability defect: OpenCode execution lacked an explicit worktree directory. The minimal fix added:
+
+```python
+cmd += ["--dir", str(worktree)]
+```
+
+Remote review verified a one-file/one-line diff. Pull request `#1` passed `AI-ENG-001 CI` run `33301128677` and was promoted to canonical `main` in merge commit:
+
+`6e8df32168bc665b8aac288a5b828379122918d3`.
+
+The test suite and synthetic smoke prove runtime mechanics only. They do not prove model engineering quality on real product work, customer acceptance or positive economics.
 
 Not yet evidenced:
 
-- execution against the Owner's actual OpenCode installation;
-- launchd operation on the Mac mini;
-- a real product task through the end-to-end pilot;
+- one real low-risk product task through the end-to-end supervised pilot;
 - runtime/model replacement;
 - measured Owner-time reduction;
-- actual provider/tool cost;
-- branch push/PR behavior in the Owner environment.
+- actual provider/tool cost under real workload;
+- sustained value/rework/escalation behavior across real tasks.
 
-Those belong to AC-605, AC-606 and AC-607 and must not be inferred from implementation PASS.
+Those belong to the remaining AC-605 evidence and AC-606/AC-607. They must not be inferred from deployment PASS.
