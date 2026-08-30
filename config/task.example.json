@@ -1,0 +1,21 @@
+{
+  "id": "PILOT-001",
+  "repository": "/Users/YOU/workspace/discount-parser",
+  "base_ref": "HEAD",
+  "objective": "Implement one bounded engineering task exactly as described in the repository task contract.",
+  "acceptance": [
+    "Required behavior is implemented without expanding product scope.",
+    "Relevant regression tests pass.",
+    "No customer acceptance or production readiness is inferred from technical results."
+  ],
+  "test_commands": ["python3 -m pytest -q"],
+  "allowed_paths": [],
+  "forbidden_paths": [".git", ".env"],
+  "requires_owner_decision": false,
+  "external_customer_effect": false,
+  "material_spend": false,
+  "requires_raw_secret": false,
+  "changes_company_product_os_boundary": false,
+  "changes_scope_or_commitment": false,
+  "timeout_seconds": 3600
+}
