@@ -10,11 +10,12 @@ Implemented artifacts:
 - `ai_workforce/ai_eng_001/config.example.json` — runtime config;
 - `ai_workforce/ai_eng_001/task.example.json` — bounded task contract;
 - `ai_workforce/ai_eng_001/com.arvectum.ai-eng-001.plist.template` — launchd service template;
-- `ai_workforce/ai_eng_001/install_macos.sh` and `ai_workforce/ai_eng_001/uninstall_macos.sh` — Mac mini deployment helpers;
+- `ai_workforce/ai_eng_001/install_macos.sh`, `uninstall_macos.sh`, `smoke_test.sh` — Mac mini deployment helpers;
 - `tests/test_ai_eng_001.py` — runner mechanics regression tests;
+- `.github/workflows/ai-eng-001-ci.yml` — independent CI validation;
 - `docs/operations/AI-ENG-001-RUNTIME.md` — operator/runtime reference.
 
-Validation in the implementation environment:
+Local implementation validation:
 
 ```text
 PYTHONPATH=. python3 -m unittest discover -s tests -v
@@ -22,12 +23,19 @@ Ran 4 tests
 OK
 ```
 
-Additional validation:
+Additional local validation:
 
 - Python modules compiled with `py_compile`;
 - macOS deployment scripts passed `bash -n` syntax validation.
 
-The test suite used a deterministic fake coding executor to prove runner mechanics without pretending that a model's engineering quality was tested.
+Independent GitHub Actions validation:
+
+- workflow: `AI-ENG-001 CI`;
+- run: `33299430866`;
+- head: `d77e0f32d19e417b1cb556aad185845a8a1e72c3`;
+- result: `completed / success`.
+
+The test suite uses a deterministic fake coding executor to prove runner mechanics without pretending that a model's engineering quality was tested.
 
 Not yet evidenced:
 
