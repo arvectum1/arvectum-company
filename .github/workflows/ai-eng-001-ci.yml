@@ -1,0 +1,35 @@
+name: AI-ENG-001 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ai_workforce/ai_eng_001/**'
+      - 'tests/test_ai_eng_001.py'
+      - '.github/workflows/ai-eng-001-ci.yml'
+  pull_request:
+    paths:
+      - 'ai_workforce/ai_eng_001/**'
+      - 'tests/test_ai_eng_001.py'
+      - '.github/workflows/ai-eng-001-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  runner-mechanics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile ai_workforce/ai_eng_001/*.py
+      - name: Unit and integration tests
+        run: python -m unittest discover -s tests -p 'test_ai_eng_001.py' -v
+      - name: Shell syntax
+        run: |
+          bash -n ai_workforce/ai_eng_001/install_macos.sh
+          bash -n ai_workforce/ai_eng_001/uninstall_macos.sh
+          bash -n ai_workforce/ai_eng_001/smoke_test.sh
