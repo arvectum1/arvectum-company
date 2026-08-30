@@ -1,100 +1,64 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.46.0`
+Версия: `0.47.0`
 Создано: `2026-08-19`
 Обновлено: `2026-08-30`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — Mac mini deployment / real-task evidence pending`
+Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — deployment PASS / first real task pending`
 
 ## 1. Модель публикации
 
-Эта редакция `0.46.0` сохраняет полное содержание дорожной карты `0.45.0` по immutable git blob и публикует только новое состояние AC-602…AC-604 и handoff в AC-605.
+Эта редакция `0.47.0` сохраняет полное содержание дорожной карты `0.46.0` по immutable git blob и публикует только новое состояние Mac mini deployment/promotion внутри AC-605.
 
 Предыдущая редакция:
 
-- версия: `0.45.0`;
+- версия: `0.46.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `89ba3b2bb361d7101adbb3ec63d1b8ebbacde312`.
+- immutable git blob SHA: `3bf8a32019db9b1a02bbcad403c61bf16dc73484`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601 selection, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. AC-602 — complete
+## 2. AC-605 deployment gate — PASS
 
-`AC-602 — Position business case and unit-economics/workload evidence` получает статус:
+Owner-controlled Mac mini deployment теперь имеет статус:
 
-**`Complete / PASS for bounded pilot baseline`.**
+**`PASS — AI-ENG-001 deployed and synthetic smoke validated`.**
 
-Canonical artifact:
+Canonical evidence:
 
-`docs/business/AC-602-POS-004-BUSINESS-CASE.md`.
+`docs/operations/AC-605-MAC-MINI-DEPLOYMENT-EVIDENCE.md`.
 
-AC-602 не заявляет исторические часы, экономию, прибыльность или положительный ROI. Pilot должен измерять real Owner interventions, attempts/rework, tests/checks и observable runtime/tool cost на реальных задачах.
+Observed deployment evidence:
 
-## 3. AC-603 — complete
+- AI-ENG-001 running on Mac mini;
+- Python compile PASS;
+- targeted runner tests `4/4 PASS`;
+- synthetic smoke `READY_FOR_OWNER`;
+- smoke checks `5/5 PASS`;
+- no real product task executed;
+- no autonomous merge/release/deploy/customer effect.
 
-`AC-603 — Assignment, authority, runtime, tools and data boundary` получает статус:
+The deployment found one real portability defect in OpenCode worktree targeting. The bounded fix adds explicit:
 
-**`Complete / PASS for bounded pilot implementation`.**
+`--dir <worktree>`
 
-Создан persistent pilot Principal:
+to the OpenCode executor invocation.
 
-**`AI-ENG-001`**
+Remote review established that branch `work/ac-605-mac-mini-deploy` was one commit ahead, zero behind and changed exactly one file with one insertion. PR `#1` passed `AI-ENG-001 CI` and was promoted to canonical `main`.
 
-для:
+Fix commit:
 
-**`POS-004 — Engineering & Release Lead`.**
+`f08b2a7f4101cf73ea0896ca353eb72c332f7a1b`
 
-Canonical Assignment/runtime artifact:
+Merge commit:
 
-`docs/organization/AC-603-AI-ENG-001-ASSIGNMENT-RUNTIME-BOUNDARY.md`.
+`6e8df32168bc665b8aac288a5b828379122918d3`
 
-Initial replaceable runtime:
-
-- Owner-controlled Mac mini target;
-- Python standard-library supervisor in `ai_workforce/ai_eng_001/**`;
-- OpenCode CLI as coding executor;
-- optional OpenAI-compatible manager LLM, disabled by default;
-- local git worktree isolation;
-- launchd user-service deployment helper;
-- file-based run evidence and queue.
-
-Autonomous pilot authority stops at `READY_FOR_OWNER`. `AM-3` and `AM-4` remain inactive. Commit requires explicit Owner `approve`; remote push additionally requires explicit `--push`. No automatic merge/release/deploy/customer effect exists.
-
-## 4. AC-604 — complete
-
-`AC-604 — Quality/evaluation, cost and risk gates` получает статус:
-
-**`Complete / PASS for pilot gates`.**
-
-Canonical gate artifact:
-
-`docs/operations/AC-604-AI-ENG-001-QUALITY-COST-RISK-GATES.md`.
-
-Implementation evidence:
-
-`docs/operations/AI-ENG-001-PILOT-RUNTIME-IMPLEMENTATION-EVIDENCE.md`.
-
-Cross-review:
-
-`docs/reviews/AC-602-604-AI-ENG-001-PILOT-CROSS-REVIEW.md` — `7/7 PASS`.
-
-Owner decision:
-
-`docs/governance/decisions/DECISION-2026-08-30-AC-602-604-AI-ENG-001-PILOT.md`.
-
-Implementation-environment validation:
-
-- `4 tests / 4 PASS`;
-- Python `py_compile` PASS;
-- deployment shell syntax `bash -n` PASS.
-
-These are runner-mechanics evidence only. They do not prove OpenCode/model quality, Mac mini deployment, customer readiness or positive economics.
-
-## 5. M6 current status
+## 3. M6 current status
 
 `M6 — First real AI-held Position proven economically and operationally` remains:
 
@@ -106,32 +70,39 @@ These are runner-mechanics evidence only. They do not prove OpenCode/model quali
 | `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
-| `AC-605` | Supervised AI Position pilot | `Current / deployment + real-task evidence pending` |
-| `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on AC-605 evidence` |
+| `AC-605` | Supervised AI Position pilot | `Current / deployment PASS — first real task pending` |
+| `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on real AC-605 task evidence` |
 | `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / blocked on AC-605/606 evidence` |
 
-## 6. AC-605 exact next evidence
+## 4. AC-605 exact next step
 
-AC-605 may advance only from real Owner-controlled runtime evidence. Minimum next evidence:
+The installation/synthetic phase is complete. The next evidence MUST come from one real low-risk product engineering task executed through the deployed AI-ENG-001 runtime.
 
-1. clone/update `arvectum-company` on the Mac mini;
-2. run the supplied macOS installer and `doctor`;
-3. confirm the installed OpenCode CLI is available to the launchd runtime;
-4. submit one low-risk bounded real product task through AI-ENG-001;
-5. capture run state, baseline SHA, changed paths, declared test results, executor logs and Owner intervention count;
-6. if `READY_FOR_OWNER`, perform human review; promotion remains explicit;
-7. record any rework, runtime/model cost where observable and failures/escalations honestly.
+The task must have:
 
-A synthetic task can validate installation but cannot by itself complete the supervised real-position pilot.
+1. clear product ownership and canonical repository;
+2. bounded engineering scope;
+3. explicit acceptance criteria;
+4. reversible git-based output;
+5. objective tests/checks or equivalent evidence;
+6. no material spend;
+7. no raw-secret requirement;
+8. no customer consequential external effect;
+9. no Company/Product/OS authority-boundary change;
+10. a human review gate at `READY_FOR_OWNER` before promotion.
 
-## 7. M5 remains open
+The pilot must capture baseline SHA, task contract, changed paths, executor evidence, declared tests, rework/attempts, Owner intervention count/minutes where observable and final human decision.
 
-AC-602…AC-604 do not close or bypass M5.
+A synthetic task is sufficient for deployment proof but not for AC-605 completion.
 
-`M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with its existing customer evidence gates preserved from roadmap 0.45.0/0.44.0.
+## 5. Authority boundary remains unchanged
 
-## 8. Authority and readiness boundary
+Mac mini deployment PASS and promotion of the portability fix do not activate AM-3 or AM-4 and do not grant AI-ENG-001 autonomous authority to merge, release, deploy, make customer commitments, accept customer work, incur material spend or exercise Reserved Owner Decisions.
 
-The existence of AI-ENG-001 code does not itself create production readiness, profitability, customer acceptance, new budget, new credentials, legal/corporate authority, AM-3/AM-4, autonomous consequential external effects or Arvectum OS lifecycle changes.
+`READY_FOR_OWNER` remains evidence that the runtime reached a review gate, not evidence of Owner approval.
 
-The pilot is intentionally reversible. OpenCode, the manager LLM and the Mac mini runtime are replaceable execution means rather than sources of Organizational Authority.
+## 6. M5 remains open
+
+`M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with the existing customer evidence gates preserved from the previous roadmap chain.
+
+M5 and M6 may continue to produce independent evidence in parallel and MUST NOT borrow or fabricate evidence from one another.
