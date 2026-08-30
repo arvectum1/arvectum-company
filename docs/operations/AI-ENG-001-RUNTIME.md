@@ -26,6 +26,16 @@ Task JSON
 
 No runtime state implies customer acceptance, production readiness or business approval.
 
+## Executor Evidence And Time Limits
+
+The coding executor runs in its own process session. Its stdout and stderr are appended incrementally to `executor.stdout.txt` and `executor.stderr.txt` in the run directory, so evidence is available before the executor exits.
+
+Every run also has an atomically written `runtime-status.json`. It records the current phase, executor PID, heartbeat time, last observed stdout/stderr activity, elapsed time, hard and idle limits, and terminal termination classification. Phases include `ADMISSION`, `WORKTREE_READY`, `EXECUTOR_RUNNING`, `POST_EXECUTOR_CHECKS`, `TESTING`, `READY_FOR_OWNER`, `BLOCKED`, and `NEEDS_OWNER`.
+
+`timeout_seconds` remains the task hard limit. `executor_idle_timeout_seconds` is a separate configuration limit (default `600`) for no stdout/stderr activity. A silent executor is terminated as its own process group with `SIGTERM`, then `SIGKILL` after a bounded grace period if needed. Classifications are `executor_idle_timeout`, `executor_hard_timeout`, `executor_nonzero_exit`, and `supervisor_interrupted` where applicable.
+
+`status` includes runs that have `runtime-status.json` but no terminal report, allowing an Owner to observe a running task. Declared post-executor test commands run only after a zero executor exit; timeout and non-zero exits remain fail-closed.
+
 ## Task contract
 
 Required fields: `id`, `repository`, `objective`, and a non-empty `acceptance` list.
