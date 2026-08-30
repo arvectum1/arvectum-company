@@ -42,6 +42,8 @@ Required fields: `id`, `repository`, `objective`, and a non-empty `acceptance` l
 
 Operational fields: `base_ref`, `test_commands`, `allowed_paths`, `forbidden_paths`, and `timeout_seconds`.
 
+`requires_changes` defaults to `true` for engineering tasks and preserves the existing requirement for at least one changed path. Set it to `false` only for execution-only tasks whose output is contractually outside the Git repository. An execution-only task succeeds only with a clean worktree; any Git mutation fails closed. Execution-only runs have no Git candidate, so they cannot be approved or promoted through `approve`.
+
 Protected flags, all of which must be false for the autonomous pilot path:
 
 - `requires_owner_decision`;

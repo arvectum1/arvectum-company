@@ -8,7 +8,7 @@ import time
 import unittest
 from pathlib import Path
 
-from ai_workforce.ai_eng_001.core import Config, Task, doctor, execute_task, list_runs, path_allowed, run_streaming_executor
+from ai_workforce.ai_eng_001.core import AgentError, Config, Task, approve_run, doctor, execute_task, list_runs, path_allowed, run_streaming_executor
 
 
 class TestTask(unittest.TestCase):
@@ -50,13 +50,16 @@ class TestExecution(unittest.TestCase):
         self._git(repo, "commit", "-m", "init")
         return repo
 
-    def _task(self, root: Path, repo: Path, test_commands: list[str] | None = None) -> Path:
-        task = root / "task.json"
-        task.write_text(json.dumps({
+    def _task(self, root: Path, repo: Path, test_commands: list[str] | None = None, requires_changes: bool | None = None) -> Path:
+        payload = {
             "id": "T-2", "repository": str(repo), "objective": "change file",
             "acceptance": ["file is new"], "allowed_paths": ["file.txt"],
             "test_commands": test_commands or [], "timeout_seconds": 60,
-        }))
+        }
+        if requires_changes is not None:
+            payload["requires_changes"] = requires_changes
+        task = root / "task.json"
+        task.write_text(json.dumps(payload))
         return task
 
     def _run_dir(self, state: Path) -> Path:
@@ -74,6 +77,7 @@ class TestExecution(unittest.TestCase):
             result = execute_task(task, cfg)
             self.assertEqual(result["state"], "READY_FOR_OWNER")
             self.assertIn("file.txt", result["changed_paths"])
+            self.assertTrue(result["requires_changes"])
             self.assertEqual((repo / "file.txt").read_text(), "old\n")
             run_dir = self._run_dir(cfg.state_dir)
             self.assertIn("stdout", (run_dir / "executor.stdout.txt").read_text())
@@ -121,11 +125,51 @@ class TestExecution(unittest.TestCase):
             fake.chmod(0o755)
             marker = root / "SHOULD_NOT_EXIST"
             cfg = Config(state_dir=root / "state", executor_cmd=[str(fake)])
-            result = execute_task(self._task(root, repo, [f"touch {marker}"]), cfg)
+            result = execute_task(self._task(root, repo, [f"touch {marker}"], requires_changes=False), cfg)
             self.assertEqual(result["state"], "BLOCKED")
             self.assertIn("executor_nonzero_exit", result["reasons"])
             self.assertEqual(result["executor_termination_reason"], "executor_nonzero_exit")
             self.assertFalse(marker.exists())
+
+    def test_execution_only_clean_worktree_is_ready_without_changes(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo = self._repo(root)
+            fake = root / "execution-only.sh"
+            fake.write_text("#!/bin/sh\nexit 0\n")
+            fake.chmod(0o755)
+            cfg = Config(state_dir=root / "state", executor_cmd=[str(fake)])
+            result = execute_task(self._task(root, repo, ["test -f file.txt"], requires_changes=False), cfg)
+            self.assertEqual(result["state"], "READY_FOR_OWNER")
+            self.assertEqual(result["changed_paths"], [])
+            self.assertIn({"name": "execution_only_worktree_clean", "ok": True, "count": 0}, result["checks"])
+            self.assertFalse(result["requires_changes"])
+
+    def test_execution_only_mutation_is_blocked(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo = self._repo(root)
+            fake = root / "mutation.sh"
+            fake.write_text("#!/bin/sh\nprintf 'new\\n' > file.txt\n")
+            fake.chmod(0o755)
+            cfg = Config(state_dir=root / "state", executor_cmd=[str(fake)])
+            result = execute_task(self._task(root, repo, requires_changes=False), cfg)
+            self.assertEqual(result["state"], "BLOCKED")
+            self.assertIn("unexpected_changes_in_execution_only_task", result["reasons"])
+            self.assertIn({"name": "execution_only_worktree_clean", "ok": False, "count": 1}, result["checks"])
+
+    def test_execution_only_run_cannot_be_approved(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            repo = self._repo(root)
+            fake = root / "execution-only.sh"
+            fake.write_text("#!/bin/sh\nexit 0\n")
+            fake.chmod(0o755)
+            cfg = Config(state_dir=root / "state", executor_cmd=[str(fake)])
+            result = execute_task(self._task(root, repo, ["true"], requires_changes=False), cfg)
+            self.assertEqual(result["state"], "READY_FOR_OWNER")
+            with self.assertRaisesRegex(AgentError, "execution-only run has no git changes to approve"):
+                approve_run(result["run_id"], cfg)
 
     def test_hard_timeout_is_distinct(self):
         with tempfile.TemporaryDirectory() as td:
