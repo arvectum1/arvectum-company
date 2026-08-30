@@ -1,154 +1,137 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.45.0`
+Версия: `0.46.0`
 Создано: `2026-08-19`
 Обновлено: `2026-08-30`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
-Текущее каноническое действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Параллельное M6-направление: `AC-601 — Complete / PASS — POS-004 selected`
-Следующий доступный M6-шаг: `AC-602 — Position business case and unit-economics/workload evidence`
+
+Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
+Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — Mac mini deployment / real-task evidence pending`
 
 ## 1. Модель публикации
 
-Эта редакция `0.45.0` сохраняет полное содержание дорожной карты `0.44.0` по immutable git blob и меняет только состояние, подтверждённое Owner-directed AC-601 execution/approval.
+Эта редакция `0.46.0` сохраняет полное содержание дорожной карты `0.45.0` по immutable git blob и публикует только новое состояние AC-602…AC-604 и handoff в AC-605.
 
 Предыдущая редакция:
 
-- версия: `0.44.0`;
+- версия: `0.45.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `815cdeac626f3ddede648f5c1a3ed775af2b6a00`.
+- immutable git blob SHA: `89ba3b2bb361d7101adbb3ec63d1b8ebbacde312`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, Company priority hierarchy, AC-108 path, Company/Product/Arvectum OS boundaries и прочее содержание `0.44.0` сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601 selection, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. AC-601 — completed and approved
+## 2. AC-602 — complete
 
-`AC-601 — AI delegation candidate selection from real workload` получает статус:
+`AC-602 — Position business case and unit-economics/workload evidence` получает статус:
 
-**`Complete / PASS — POS-004 selected`.**
+**`Complete / PASS for bounded pilot baseline`.**
 
-Approved selection:
+Canonical artifact:
 
-**`POS-004 — Engineering & Release Lead`**
+`docs/business/AC-602-POS-004-BUSINESS-CASE.md`.
 
-как первая Position для M6 AI-held Position proof.
+AC-602 не заявляет исторические часы, экономию, прибыльность или положительный ROI. Pilot должен измерять real Owner interventions, attempts/rework, tests/checks и observable runtime/tool cost на реальных задачах.
 
-Canonical artifacts:
+## 3. AC-603 — complete
 
-- approved publication: `docs/organization/AI-DELEGATION-CANDIDATE-SELECTION-v1.0.0.md`;
-- reviewed proposal: `docs/organization/AI-DELEGATION-CANDIDATE-SELECTION.md` — `Proposed 0.9.0`;
-- proposal blob: `b1b37d87a963c717a589c34c74616f5c7e78f585`;
-- cross-review: `docs/reviews/AC-601-AI-DELEGATION-CANDIDATE-SELECTION-CROSS-REVIEW.md` — `7 of 7 / PASS`;
-- cross-review blob: `c9c81ec5a086d796b1b8b0d31c3c7e19d7fdbf98`;
-- Owner decision: `docs/governance/decisions/DECISION-2026-08-30-AC-601-APPROVAL.md` — `Approved`;
-- decision blob: `694d964019416dca5b03c4715a7ce4ff1c750542`.
+`AC-603 — Assignment, authority, runtime, tools and data boundary` получает статус:
 
-Selection rationale is based on real workload, existing AC-205 AI-led realization, bounded AM-0/AM-1/AM-2 execution, strong git/test/CI evidence, AC-206 least-privilege feasibility and AC-207 replacement/fallback semantics.
+**`Complete / PASS for bounded pilot implementation`.**
 
-`POS-002 — Commercial & Customer Lead` remains the strongest identified follow-on AI-held candidate, not a rejected Position.
+Создан persistent pilot Principal:
 
-## 3. M5 remains open
+**`AI-ENG-001`**
 
-AC-601 does **not** close or bypass M5.
+для:
 
-`M5 — First real governed Company operating contour proven` remains:
+**`POS-004 — Engineering & Release Lead`.**
 
-**`Current`.**
+Canonical Assignment/runtime artifact:
 
-`AC-505` remains:
+`docs/organization/AC-603-AI-ENG-001-ASSIGNMENT-RUNTIME-BOUNDARY.md`.
 
-`Current / external evidence wait`.
+Initial replaceable runtime:
 
-Current real case state remains:
+- Owner-controlled Mac mini target;
+- Python standard-library supervisor in `ai_workforce/ai_eng_001/**`;
+- OpenCode CLI as coding executor;
+- optional OpenAI-compatible manager LLM, disabled by default;
+- local git worktree isolation;
+- launchd user-service deployment helper;
+- file-based run evidence and queue.
 
-`CL-3 — Evidence insufficient / not reproduced`
-→
-`W11 — unknown / customer-evidence follow-up required`.
+Autonomous pilot authority stops at `READY_FOR_OWNER`. `AM-3` and `AM-4` remain inactive. Commit requires explicit Owner `approve`; remote push additionally requires explicit `--push`. No automatic merge/release/deploy/customer effect exists.
 
-No customer acceptance or POS-004 correction is inferred from AC-601.
+## 4. AC-604 — complete
 
-AC-507 remains `Complete / PASS — CONTINUE WITH CHANGE / bounded evidence phase`.
+`AC-604 — Quality/evaluation, cost and risk gates` получает статус:
 
-## 4. M6 bounded early admission
+**`Complete / PASS for pilot gates`.**
 
-The Owner explicitly directed execution of AC-601 after the proposed POS-004 hypothesis was presented.
+Canonical gate artifact:
 
-This creates a bounded sequencing change:
+`docs/operations/AC-604-AI-ENG-001-QUALITY-COST-RISK-GATES.md`.
 
-`M6 — First real AI-held Position proven economically and operationally`
+Implementation evidence:
 
-moves from `Planned` to:
+`docs/operations/AI-ENG-001-PILOT-RUNTIME-IMPLEMENTATION-EVIDENCE.md`.
+
+Cross-review:
+
+`docs/reviews/AC-602-604-AI-ENG-001-PILOT-CROSS-REVIEW.md` — `7/7 PASS`.
+
+Owner decision:
+
+`docs/governance/decisions/DECISION-2026-08-30-AC-602-604-AI-ENG-001-PILOT.md`.
+
+Implementation-environment validation:
+
+- `4 tests / 4 PASS`;
+- Python `py_compile` PASS;
+- deployment shell syntax `bash -n` PASS.
+
+These are runner-mechanics evidence only. They do not prove OpenCode/model quality, Mac mini deployment, customer readiness or positive economics.
+
+## 5. M6 current status
+
+`M6 — First real AI-held Position proven economically and operationally` remains:
 
 **`Current / bounded early admission`.**
-
-This status means only that AC-601 is complete and AC-602 is now an available next M6 task. It does not mean that M6 has been proven or that AC-602…AC-607 are automatically approved.
-
-The early admission is justified because the relevant POS-004 workload exists independently of the unresolved AC-505 customer-evidence wait and AC-601 itself creates no external effect, credential, new authority, material spend or customer obligation.
-
-## 5. Current M6 work-item status
 
 | ID | Work item | Status |
 |---|---|---|
 | `AC-601` | AI delegation candidate selection from real workload | `Complete / PASS — POS-004 selected` |
-| `AC-602` | Position business case and unit-economics/workload evidence | `Available / next M6 step` |
-| `AC-603` | Assignment, authority, runtime, tools and data boundary | `Planned / blocked on AC-602` |
-| `AC-604` | Quality/evaluation, cost and risk gates | `Planned` |
-| `AC-605` | Supervised AI Position pilot | `Planned` |
-| `AC-606` | Human/software fallback and executor-replacement proof | `Planned` |
-| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned` |
+| `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
+| `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
+| `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
+| `AC-605` | Supervised AI Position pilot | `Current / deployment + real-task evidence pending` |
+| `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on AC-605 evidence` |
+| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / blocked on AC-605/606 evidence` |
 
-## 6. What AC-601 does not create
+## 6. AC-605 exact next evidence
 
-AC-601 does not itself create:
+AC-605 may advance only from real Owner-controlled runtime evidence. Minimum next evidence:
 
-- a concrete AI Principal such as `AI-ENG-001`;
-- a new/broadened POS-004 Assignment;
-- GitHub/GitVerse/CI/production/customer-system credentials;
-- raw reusable secret access;
-- AM-3 or AM-4;
-- ROD-01…ROD-09 delegation;
-- autonomous merge/release/deploy/external effects beyond already approved boundaries;
-- material recurring spend;
-- model/vendor lock-in;
-- profitability, quality, customer-readiness or M6 completion proof.
+1. clone/update `arvectum-company` on the Mac mini;
+2. run the supplied macOS installer and `doctor`;
+3. confirm the installed OpenCode CLI is available to the launchd runtime;
+4. submit one low-risk bounded real product task through AI-ENG-001;
+5. capture run state, baseline SHA, changed paths, declared test results, executor logs and Owner intervention count;
+6. if `READY_FOR_OWNER`, perform human review; promotion remains explicit;
+7. record any rework, runtime/model cost where observable and failures/escalations honestly.
 
-The concrete employee identity/runtime boundary belongs to AC-603 after AC-602 establishes the business/workload baseline.
+A synthetic task can validate installation but cannot by itself complete the supervised real-position pilot.
 
-## 7. Available execution paths now
+## 7. M5 remains open
 
-### A. M5 empirical path
+AC-602…AC-604 do not close or bypass M5.
 
-Resume AC-505 on valid new/recovered authoritative evidence or another qualifying real customer feedback case. Apply AC-507 bounded measurement rules on the next qualifying case.
+`M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with its existing customer evidence gates preserved from roadmap 0.45.0/0.44.0.
 
-### B. M6 first AI Position path
+## 8. Authority and readiness boundary
 
-`AC-602` is now available. It should define the measurable POS-004 workload/business case, current Owner intervention points, included/excluded task classes, quality/throughput/cost evidence and stop/continue criteria.
+The existence of AI-ENG-001 code does not itself create production readiness, profitability, customer acceptance, new budget, new credentials, legal/corporate authority, AM-3/AM-4, autonomous consequential external effects or Arvectum OS lifecycle changes.
 
-Do not provision the persistent AI employee merely to keep momentum. AC-603 follows only after the business case is explicit.
-
-### C. Real revenue/client/product work
-
-Current product/client work may continue in its own repositories where it creates revenue, customer value, obligation closure or material evidence. Such real engineering work may later become AC-605 pilot workload only after the relevant AC-602…AC-604 gates are satisfied.
-
-### D. Independent Arvectum OS work
-
-Arvectum OS roadmap work remains independent. AC-601 creates no new OS reliance or cross-repository platform commitment.
-
-## 8. Authority and boundary rule
-
-Roadmap state does not create Organizational Authority, legal/corporate authority, technical access, budget, customer/vendor commitment, Product Contract, production approval or OS lifecycle transition.
-
-The approved AC-601 selection changes only the M6 candidate/sequence state.
-
-Effective AI execution remains bounded by:
-
-```text
-Position authority envelope
-∩ Assignment scope
-∩ technical authorization/access
-∩ current workflow/data/risk conditions
-= maximum executable action
-```
-
-M5 and M6 may now produce evidence in parallel, but neither may borrow or fabricate evidence from the other.
+The pilot is intentionally reversible. OpenCode, the manager LLM and the Mac mini runtime are replaceable execution means rather than sources of Organizational Authority.
