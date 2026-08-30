@@ -1,118 +1,126 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.51.0`
+Версия: `0.52.0`
 Создано: `2026-08-19`
 Обновлено: `2026-08-30`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — runtime hardening promoted / Mac mini post-promotion verification pending`
+Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — execution-only mode promoted / Mac mini verification then exact ARV-001 retry`
 
 ## 1. Модель публикации
 
-Эта редакция `0.51.0` сохраняет полное содержание дорожной карты `0.50.0` по immutable git blob и публикует завершение repository-level remediation/promotion после первого real-task runtime hang.
+Эта редакция `0.52.0` сохраняет полное содержание дорожной карты `0.51.0` по immutable git blob и публикует promotion generic execution-only task semantics, необходимых для чистого ARV-001 presentation-compression retry без искусственного Git change.
 
 Предыдущая редакция:
 
-- версия: `0.50.0`;
+- версия: `0.51.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `cb1dbf3491fd567228b2b86e2beff2fb5890db4e`.
+- immutable git blob SHA: `bb76baf04326b8eab5879cfb2b478e1260481192`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, ARV-001 selection, first failed run evidence, Owner intervention evidence, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, first AC-605 hang evidence, runtime hardening promotion, Owner intervention evidence, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. AC-605 runtime hardening — promoted to canonical main
+## 2. Execution-only task mode — promoted
 
-Первый реальный run:
+После runtime observability/hang hardening обнаружен следующий generic contract gap: AI-ENG-001 требовал хотя бы один Git change для `READY_FOR_OWNER`, хотя реальная ARV-001 compression retry является execution-only задачей и по контракту не должна менять код.
 
-`20260830T111956Z-AC605-ARV001-AUTOREWORK-001`
+Реализован backward-compatible task field:
 
-остался классифицирован как **AI-ENG-001 runtime/observability failure before Product work**, а не как ARV-001 Product failure.
+`requires_changes`
 
-После него был реализован remediation contract:
+Semantics:
 
-`docs/operations/AC-605-AI-ENG-001-RUNTIME-HARDENING.md`.
+- default/omitted `true` — существующая engineering semantics сохраняется, reviewable Git change обязателен;
+- `false` — execution-only mode, успешный run обязан оставить Git worktree clean;
+- любое Git изменение при `requires_changes=false` fail closed как `unexpected_changes_in_execution_only_task`;
+- execution-only READY_FOR_OWNER не имеет Git candidate и не может быть promoted через `approve_run()`.
 
 Implementation branch:
 
-`work/ac-605-ai-eng-observability`
+`work/ai-eng-execution-only-mode`
 
 Implementation commit:
 
-`ea092fa817ae750970242630b1e8339439f195b4`
+`1cb2ebef6f2cef1b504a85fa9ef51aa59a74b250`
 
-Repository review confirmed:
+Repository review:
 
-- exactly one commit ahead of the selected base;
-- zero commits behind;
-- 6 expected Company runtime/docs/test files changed;
+- ahead 1 / behind 0 against base main `2f6e20190152647da0fe5683c0623122b9756e5e`;
+- 4 expected Company runtime/docs/test files changed;
 - no Tender Agent Product files changed.
 
 Pull request:
 
-`#2 — AC-605 — harden AI-ENG executor observability and hang recovery`
+`#3 — AI-ENG-001 — support fail-closed execution-only tasks`
 
 Exact-head GitHub CI:
 
 - workflow: `AI-ENG-001 CI`;
-- run: `33311787999`;
+- run: `33314133950`;
 - job: `runner-mechanics`;
 - conclusion: `success`;
 - compile PASS;
 - unit/integration tests PASS;
 - shell syntax PASS.
 
-PR #2 was merged to canonical `main`.
+PR #3 merged to canonical main.
 
 Merge commit:
 
-`8207f5da0e4b3ed03a2ceed178a122fec199ab66`
+`d81e08596cee82e433df4ef64d224f1fe03abb3d`
 
-Canonical promotion evidence:
+Canonical evidence:
 
-`docs/operations/AC-605-AI-ENG-001-HARDENING-PROMOTION-EVIDENCE.md`.
+`docs/operations/AC-605-AI-ENG-001-EXECUTION-ONLY-PROMOTION-EVIDENCE.md`.
 
-## 3. Promoted runtime capability
+## 3. Current ARV-001 exact handoff point
 
-The promoted AI-ENG-001 runtime now includes:
+Tender Agent PR #18 remains open/draft and Product Owner remains `REJECTED`.
 
-- incremental executor stdout/stderr persistence;
-- atomic `runtime-status.json` heartbeat and phase state;
-- configurable executor idle timeout, default `600` seconds;
-- distinct idle and hard timeout classifications;
-- executor-only process-group termination and child cleanup;
-- explicit `executor_idle_timeout`, `executor_hard_timeout`, `executor_nonzero_exit`, and `supervisor_interrupted` evidence;
-- no declared post-executor tests after timeout/non-zero executor result;
-- in-progress run visibility through `status`;
-- doctor validation of idle-timeout configuration;
-- normal and hanging synthetic regression/smoke coverage.
+Exact current selected Product head:
 
-This hardening does **not** claim to identify or fix the underlying reason why OpenCode/model became inactive during the first ARV-001 attempt. It makes the AI Position observable and recoverable when an executor becomes inactive.
+`7f63a38227c8cc009c722da820caf3cd05493bd9`
 
-## 4. Remaining post-promotion gate
+Hosted PR CI:
 
-Repository promotion is complete, but the real-task retry remains blocked until the Owner-controlled Mac mini proves the promoted runtime in place.
+`#246 — success`.
 
-Required order:
+The current task is execution-only:
 
-1. fast-forward canonical `arvectum-company` checkout to current `main`;
-2. `doctor` PASS with valid executor idle timeout;
-3. promoted synthetic hang smoke PASS, including bounded idle termination, child cleanup, preserved runtime status and skipped post-executor tests;
-4. promoted normal synthetic smoke PASS;
-5. only then start a **new immutable** ARV-001 execution from the exact current Product branch state.
+`ARV-001 — RETRY HUMAN REPORT COMPRESSION AFTER VALIDATOR-CONTRACT FIX`.
 
-The prior failed run and empty ARV-001 attempt root remain historical evidence and must not be overwritten or reclassified as Product execution.
+Existing candidate root:
+
+`/private/tmp/arv001-human-decision-20260830112058`
+
+The run must verify exact pre-compression hashes, execute only `scripts.arv001.compress_human_report`, preserve analysis and human-contract hashes, verify post-compression PASS markers and smoke-level presentation contract, copy the resulting review artifacts to the Owner desktop, and stop at `READY_FOR_OWNER`.
+
+No code changes, commit, push, source/EIS run, provider/LLM call, RAG rerun, quality acceptance rerun, source recovery, accepted evidence mutation, merge, Product Owner approval, independent review or freeze are authorized.
+
+## 4. Remaining Mac mini gate
+
+Repository promotion is complete. Before the new real run, the Owner-controlled Mac mini must:
+
+1. fast-forward `arvectum-company` to current canonical `main`;
+2. restart the AI-ENG launchd watch process so it loads promoted Python code;
+3. pass `doctor`;
+4. pass promoted `hang_smoke_test.sh`;
+5. pass promoted `smoke_test.sh`;
+6. enqueue the exact ARV-001 execution-only task with `requires_changes=false`.
+
+If the executor becomes inactive for the configured idle window, AI-ENG-001 must terminate only that executor process group and return `BLOCKED` evidence automatically.
 
 ## 5. Owner workload evidence
 
-The first real-task attempt retains:
+AC-605 retains the first-run manual recovery evidence:
 
 - manual recovery intervention count: `1`;
 - intervention duration: `unknown / not measured`;
 - reason: diagnose and terminate a non-progressing executor while preserving fail-closed state.
 
-The subsequent hardening/promotion does not erase this negative workload evidence. It remains input to AC-607.
+The new execution-only run should record additional Owner intervention count and time separately. Passive review after `READY_FOR_OWNER` is a governance gate, not an execution correction.
 
 ## 6. M6 current status
 
@@ -126,21 +134,23 @@ The subsequent hardening/promotion does not erase this negative workload evidenc
 | `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
-| `AC-605` | Supervised AI Position pilot | `Current / runtime hardening promoted — Mac mini post-promotion verification pending` |
+| `AC-605` | Supervised AI Position pilot | `Current / execution-only runtime promoted — exact ARV-001 retry next` |
 | `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on real AC-605 Product-task evidence` |
 | `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / intervention evidence accumulating; blocked on AC-605/606 completion` |
 
 ## 7. AC-605 exact next step
 
-Deploy the promoted `main` runtime on the Owner-controlled Mac mini and execute the synthetic post-promotion verification gate.
+Run Mac mini post-promotion verification and then enqueue the exact ARV-001 compression retry as a new AI-ENG-001 execution-only task based on `7f63a38227c8cc009c722da820caf3cd05493bd9`.
 
-If that gate passes, immediately repeat the Tender Agent / ARV-001 real-task pilot as a new run with the same authority restrictions and current exact Product branch state.
+Expected successful terminal state:
 
-The repeated run must now expose live runtime status and durable executor logs. If executor activity ceases for the configured idle window, AI-ENG-001 must fail closed automatically rather than requiring manual process diagnosis.
+`READY_FOR_OWNER`
+
+with zero Git changes, exact hash evidence, compression marker `ARV001_HUMAN_REPORT_COMPRESSED_READY`, Product Owner still `REJECTED`, and review artifacts copied for human inspection.
 
 ## 8. Authority boundary remains unchanged
 
-The runtime hardening and promotion do not activate AM-3 or AM-4 and do not grant autonomous authority to commit, push, merge, release, deploy, change Product Owner decisions, authorize independent review, retry governed provider acceptance, perform EIS/provider/RAG calls, mutate accepted/frozen evidence, mutate production DB or create customer external effects.
+The runtime changes do not activate AM-3 or AM-4 and do not grant autonomous authority to commit, push, merge, release, deploy, change Product Owner decisions, authorize independent review, retry governed provider acceptance, perform EIS/provider/RAG calls, mutate accepted/frozen evidence, mutate production DB or create customer external effects.
 
 `READY_FOR_OWNER` remains a human review gate, not approval.
 
