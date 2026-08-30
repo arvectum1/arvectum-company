@@ -1,68 +1,101 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.48.0`
+Версия: `0.49.0`
 Создано: `2026-08-19`
 Обновлено: `2026-08-30`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — first real task selected / execution pending`
+Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — Tender Agent ARV-001 selected / execution pending`
 
 ## 1. Модель публикации
 
-Эта редакция `0.48.0` сохраняет полное содержание дорожной карты `0.47.0` по immutable git blob и публикует только выбор первой реальной задачи для AI-ENG-001.
+Эта редакция `0.49.0` сохраняет полное содержание дорожной карты `0.48.0` по immutable git blob и публикует только Owner re-prioritization первой реальной задачи AI-ENG-001.
 
 Предыдущая редакция:
 
-- версия: `0.47.0`;
+- версия: `0.48.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `70c52aa2a3b60176aae00d16d92d712c4fd552ff`.
+- immutable git blob SHA: `d3bf2a312e1604af14fd25447c7ab779e6d14b48`.
 
 Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, Mac mini deployment PASS, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. AC-605 first real task — selected
+## 2. AC-605 first real task — reselected by Owner priority
 
-Первой реальной supervised product engineering задачей для `AI-ENG-001` выбрана:
+Предыдущий pilot candidate:
 
-**`DP-CUST-019 — release provenance integrity regression coverage`**
+`DP-CUST-019 — release provenance integrity regression coverage`
 
-Product owner / canonical repository:
+снимается именно с роли первой AC-605 задачи. Он остаётся валидной Discount Parser maintenance-задачей, но не нужен для текущего пилота: соответствующая implementation уже присутствует в текущем product state.
 
-`arvectum1/discount-parser`
+Новой первой реальной supervised engineering задачей для `AI-ENG-001` выбрана текущая работа:
 
-Canonical product task contract:
+**`Tender Agent / ARV-001 — decision-useful document analysis / human-facing report rework`.**
 
-`docs/tasks/DP-CUST-019.md`
+Canonical Product repository:
 
-Company selection evidence:
+`arvectum1/tender-agent`
 
-`docs/operations/AC-605-FIRST-REAL-TASK-SELECTION.md`
+Current PR:
 
-Discount Parser execution baseline after admission of the task contract:
+`#18 — ARV-001: decision-useful document analysis`
 
-`e6b3bf81909e60d6d7ddae98dab0225bba3b8190`
+Current branch:
 
-The task adds deterministic regression coverage around the existing Discount Parser release-provenance generator/verifier. It is maintenance/release-safety work with objective tests and no intended parser/runtime/customer behavior change.
+`arv001/decision-usefulness`
 
-## 3. Why this task is admitted
+Observed PR head at selection:
 
-The task satisfies the bounded AC-605 pilot criteria:
+`a78a55376ed1c5e42fc3d4f9515ac9f7453162b6`
 
-- real Product-owned engineering work;
-- clear canonical repository and task contract;
-- narrow expected path boundary (`tests/test_release_provenance.py`, with `scripts/release_provenance.py` only if a concrete defect is exposed);
-- reversible isolated git worktree output;
-- objective targeted/full tests;
-- no network requirement;
-- no raw secrets/customer data;
-- no material spend;
-- no version bump/release/deploy/customer delivery;
-- no Company/Product/OS authority-boundary change;
-- explicit human review gate at `READY_FOR_OWNER`.
+Observed exact-head CI:
 
-## 4. M6 current status
+`CI #234 — success`.
+
+Company selection artifact:
+
+`docs/operations/AC-605-FIRST-REAL-TASK-RESELECTION-ARV-001.md`.
+
+## 3. Current ARV-001 evidence state
+
+The current human-facing report remains:
+
+**`Product Owner REJECTED`.**
+
+The active corrective scope is analytical depth / decision usefulness rather than presentation-only repair. PR #18 adds source-bound concrete technical standards/characteristics, payment mechanics, security, acceptance, liability/penalty/interest, termination and application requirements, deterministic locators, explicit Decision / Evidence / Uncertainty / Caveats / Next-action structure and fail-closed quality/render validation.
+
+The latest real-source local run reached:
+
+- decision-usefulness gate `PASS`;
+- explicit unresolved source placeholder for the blank performance-security amount;
+- safe literal rendering;
+- human decision finalization without regex failure;
+
+and then failed closed because rendered validation unconditionally required an exact standard where the semantic gate correctly allowed either an exact standard or a concrete technical characteristic.
+
+The branch subsequently aligned the rendered validator with the semantic gate and added regression coverage. Exact-head CI now passes. The next required evidence is a **new immutable real-source local candidate run**.
+
+Current governance remains:
+
+- Product Owner: `REJECTED`;
+- independent review: `NOT_AUTHORIZED`;
+- freeze: `NOT_ALLOWED`;
+- ARV-001: `OPEN`;
+- P8.05: separate `BLOCKED_EXTERNAL_SOURCE`, not the cause of this rejection.
+
+## 4. Why ARV-001 is the preferred real AI Position proof
+
+This task directly tests the intended engineering delegation loop:
+
+`Owner rejection -> AI-ENG-001 -> OpenCode executor -> bounded diagnosis/rework -> tests -> real candidate -> READY_FOR_OWNER -> explicit Owner review`.
+
+The first real proof therefore measures whether POS-004 can absorb repeated technical coordination and corrective work, rather than merely execute a small isolated test-writing task.
+
+The repository-owned local ARV-001 corrective path is explicitly designed for zero provider/EIS/RAG/acceptance/production mutation while producing a human-facing Product Owner candidate from already frozen source evidence.
+
+## 5. M6 current status
 
 `M6 — First real AI-held Position proven economically and operationally` remains:
 
@@ -74,35 +107,45 @@ The task satisfies the bounded AC-605 pilot criteria:
 | `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
-| `AC-605` | Supervised AI Position pilot | `Current / DP-CUST-019 selected — execution pending` |
+| `AC-605` | Supervised AI Position pilot | `Current / ARV-001 selected — execution pending` |
 | `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on real AC-605 task evidence` |
 | `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / blocked on AC-605/606 evidence` |
 
-## 5. AC-605 exact next step
+## 6. AC-605 exact next step
 
-Run `DP-CUST-019` through the deployed Mac mini `AI-ENG-001` runtime from the current canonical Discount Parser `main` state.
+Run a bounded ARV-001 continuation through the deployed Mac mini `AI-ENG-001`, based on the exact current `arv001/decision-usefulness` PR head after fetch.
 
-The run must preserve:
+The AI Position should:
 
-1. actual execution baseline SHA;
-2. product task contract;
-3. isolated worktree and branch identity;
-4. generated executor prompt and executor output;
-5. changed paths/diff;
-6. targeted and, if practical, full test results;
-7. attempts/rework and failures/escalations;
-8. final state;
-9. Owner intervention count/time where observable.
+1. verify the current PR head and successful CI;
+2. execute the repository-owned zero-provider local candidate path against the frozen real corpus;
+3. if the local candidate fails because of a concrete defect inside the already-approved decision-usefulness/report-rework scope, diagnose and repair it in the isolated AI-ENG worktree;
+4. add/adjust focused regression coverage for any real defect repaired;
+5. rerun the relevant local candidate and deterministic tests inside the bounded task window;
+6. preserve sanitized evidence and a reviewable diff;
+7. stop at `READY_FOR_OWNER` with a new candidate, or fail closed with the exact blocker.
 
-If the result reaches `READY_FOR_OWNER`, AI-ENG-001 MUST stop. Commit/push/merge/release/deploy/customer delivery remain separate explicit human/promotion decisions.
+Because AI-ENG-001 currently requires reviewable git changes for `READY_FOR_OWNER`, a successful validation-only run with no code defect should also create a sanitized candidate-evidence record under the admitted ARV-001 evidence/docs boundary; it must not claim Product Owner approval.
 
-## 6. Authority boundary remains unchanged
+## 7. Authority boundary remains unchanged
 
-Task selection does not activate AM-3 or AM-4 and does not grant autonomous promotion authority. A need for material scope expansion, new dependency, raw secret, material spend, unrelated cleanup, customer external effect or Company/Product/OS boundary change must escalate/fail closed.
+AI-ENG-001 may not autonomously:
 
-Technical PASS of DP-CUST-019 will be evidence for AC-605 but will not by itself prove M6 completion, customer readiness, profitability or positive unit economics.
+- merge PR #18;
+- change Product Owner `REJECTED` to approved;
+- authorize independent review;
+- freeze ARV-001;
+- retry governed provider quality acceptance;
+- perform EIS/provider/RAG calls;
+- create/consume acceptance acknowledgements;
+- mutate accepted evidence or frozen source bytes;
+- mutate production DB state;
+- deploy or create customer external effects;
+- activate AM-3/AM-4.
 
-## 7. M5 remains open
+`READY_FOR_OWNER` remains a human review gate, not approval.
+
+## 8. M5 remains open
 
 `M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with the existing customer evidence gates preserved from the previous roadmap chain.
 
