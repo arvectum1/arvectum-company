@@ -5,7 +5,8 @@ import json
 import sys
 from pathlib import Path
 
-from .core import AgentError, Config, approve_run, doctor, enqueue_task, execute_task, list_runs, watch
+from .core import AgentError, Config, approve_run, doctor, enqueue_task, list_runs
+from .supervised_execution import execute_task_supervised, watch_supervised
 
 
 def parser() -> argparse.ArgumentParser:
@@ -37,11 +38,11 @@ def main() -> int:
         elif args.command == "status":
             result = list_runs(config, args.limit)
         elif args.command == "run":
-            result = execute_task(args.task, config)
+            result = execute_task_supervised(args.task, config)
         elif args.command == "approve":
             result = approve_run(args.run_id, config, push=args.push)
         elif args.command == "watch":
-            watch(config)
+            watch_supervised(config)
             return 0
         else:
             raise AssertionError(args.command)
