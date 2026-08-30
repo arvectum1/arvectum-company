@@ -1,64 +1,68 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.47.0`
+Версия: `0.48.0`
 Создано: `2026-08-19`
 Обновлено: `2026-08-30`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — deployment PASS / first real task pending`
+Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — first real task selected / execution pending`
 
 ## 1. Модель публикации
 
-Эта редакция `0.47.0` сохраняет полное содержание дорожной карты `0.46.0` по immutable git blob и публикует только новое состояние Mac mini deployment/promotion внутри AC-605.
+Эта редакция `0.48.0` сохраняет полное содержание дорожной карты `0.47.0` по immutable git blob и публикует только выбор первой реальной задачи для AI-ENG-001.
 
 Предыдущая редакция:
 
-- версия: `0.46.0`;
+- версия: `0.47.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `3bf8a32019db9b1a02bbcad403c61bf16dc73484`.
+- immutable git blob SHA: `70c52aa2a3b60176aae00d16d92d712c4fd552ff`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, Mac mini deployment PASS, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. AC-605 deployment gate — PASS
+## 2. AC-605 first real task — selected
 
-Owner-controlled Mac mini deployment теперь имеет статус:
+Первой реальной supervised product engineering задачей для `AI-ENG-001` выбрана:
 
-**`PASS — AI-ENG-001 deployed and synthetic smoke validated`.**
+**`DP-CUST-019 — release provenance integrity regression coverage`**
 
-Canonical evidence:
+Product owner / canonical repository:
 
-`docs/operations/AC-605-MAC-MINI-DEPLOYMENT-EVIDENCE.md`.
+`arvectum1/discount-parser`
 
-Observed deployment evidence:
+Canonical product task contract:
 
-- AI-ENG-001 running on Mac mini;
-- Python compile PASS;
-- targeted runner tests `4/4 PASS`;
-- synthetic smoke `READY_FOR_OWNER`;
-- smoke checks `5/5 PASS`;
-- no real product task executed;
-- no autonomous merge/release/deploy/customer effect.
+`docs/tasks/DP-CUST-019.md`
 
-The deployment found one real portability defect in OpenCode worktree targeting. The bounded fix adds explicit:
+Company selection evidence:
 
-`--dir <worktree>`
+`docs/operations/AC-605-FIRST-REAL-TASK-SELECTION.md`
 
-to the OpenCode executor invocation.
+Discount Parser execution baseline after admission of the task contract:
 
-Remote review established that branch `work/ac-605-mac-mini-deploy` was one commit ahead, zero behind and changed exactly one file with one insertion. PR `#1` passed `AI-ENG-001 CI` and was promoted to canonical `main`.
+`e6b3bf81909e60d6d7ddae98dab0225bba3b8190`
 
-Fix commit:
+The task adds deterministic regression coverage around the existing Discount Parser release-provenance generator/verifier. It is maintenance/release-safety work with objective tests and no intended parser/runtime/customer behavior change.
 
-`f08b2a7f4101cf73ea0896ca353eb72c332f7a1b`
+## 3. Why this task is admitted
 
-Merge commit:
+The task satisfies the bounded AC-605 pilot criteria:
 
-`6e8df32168bc665b8aac288a5b828379122918d3`
+- real Product-owned engineering work;
+- clear canonical repository and task contract;
+- narrow expected path boundary (`tests/test_release_provenance.py`, with `scripts/release_provenance.py` only if a concrete defect is exposed);
+- reversible isolated git worktree output;
+- objective targeted/full tests;
+- no network requirement;
+- no raw secrets/customer data;
+- no material spend;
+- no version bump/release/deploy/customer delivery;
+- no Company/Product/OS authority-boundary change;
+- explicit human review gate at `READY_FOR_OWNER`.
 
-## 3. M6 current status
+## 4. M6 current status
 
 `M6 — First real AI-held Position proven economically and operationally` remains:
 
@@ -70,38 +74,35 @@ Merge commit:
 | `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
-| `AC-605` | Supervised AI Position pilot | `Current / deployment PASS — first real task pending` |
+| `AC-605` | Supervised AI Position pilot | `Current / DP-CUST-019 selected — execution pending` |
 | `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on real AC-605 task evidence` |
 | `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / blocked on AC-605/606 evidence` |
 
-## 4. AC-605 exact next step
+## 5. AC-605 exact next step
 
-The installation/synthetic phase is complete. The next evidence MUST come from one real low-risk product engineering task executed through the deployed AI-ENG-001 runtime.
+Run `DP-CUST-019` through the deployed Mac mini `AI-ENG-001` runtime from the current canonical Discount Parser `main` state.
 
-The task must have:
+The run must preserve:
 
-1. clear product ownership and canonical repository;
-2. bounded engineering scope;
-3. explicit acceptance criteria;
-4. reversible git-based output;
-5. objective tests/checks or equivalent evidence;
-6. no material spend;
-7. no raw-secret requirement;
-8. no customer consequential external effect;
-9. no Company/Product/OS authority-boundary change;
-10. a human review gate at `READY_FOR_OWNER` before promotion.
+1. actual execution baseline SHA;
+2. product task contract;
+3. isolated worktree and branch identity;
+4. generated executor prompt and executor output;
+5. changed paths/diff;
+6. targeted and, if practical, full test results;
+7. attempts/rework and failures/escalations;
+8. final state;
+9. Owner intervention count/time where observable.
 
-The pilot must capture baseline SHA, task contract, changed paths, executor evidence, declared tests, rework/attempts, Owner intervention count/minutes where observable and final human decision.
+If the result reaches `READY_FOR_OWNER`, AI-ENG-001 MUST stop. Commit/push/merge/release/deploy/customer delivery remain separate explicit human/promotion decisions.
 
-A synthetic task is sufficient for deployment proof but not for AC-605 completion.
+## 6. Authority boundary remains unchanged
 
-## 5. Authority boundary remains unchanged
+Task selection does not activate AM-3 or AM-4 and does not grant autonomous promotion authority. A need for material scope expansion, new dependency, raw secret, material spend, unrelated cleanup, customer external effect or Company/Product/OS boundary change must escalate/fail closed.
 
-Mac mini deployment PASS and promotion of the portability fix do not activate AM-3 or AM-4 and do not grant AI-ENG-001 autonomous authority to merge, release, deploy, make customer commitments, accept customer work, incur material spend or exercise Reserved Owner Decisions.
+Technical PASS of DP-CUST-019 will be evidence for AC-605 but will not by itself prove M6 completion, customer readiness, profitability or positive unit economics.
 
-`READY_FOR_OWNER` remains evidence that the runtime reached a review gate, not evidence of Owner approval.
-
-## 6. M5 remains open
+## 7. M5 remains open
 
 `M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with the existing customer evidence gates preserved from the previous roadmap chain.
 
