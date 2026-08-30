@@ -39,6 +39,7 @@ class Task:
     requires_raw_secret: bool = False
     changes_company_product_os_boundary: bool = False
     changes_scope_or_commitment: bool = False
+    requires_changes: bool = True
     timeout_seconds: int = 3600
 
     @classmethod
@@ -72,6 +73,7 @@ class Task:
             requires_raw_secret=bool(raw.get("requires_raw_secret", False)),
             changes_company_product_os_boundary=bool(raw.get("changes_company_product_os_boundary", False)),
             changes_scope_or_commitment=bool(raw.get("changes_scope_or_commitment", False)),
+            requires_changes=bool(raw.get("requires_changes", True)),
             timeout_seconds=timeout,
         )
 
@@ -513,9 +515,14 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
             reasons.append("executor_nonzero_exit")
         else:
             status("POST_EXECUTOR_CHECKS", branch=branch, baseline_sha=baseline_sha, worktree=worktree)
-            checks.append({"name": "changed_files_present", "ok": bool(paths), "count": len(paths)})
-            if not paths:
-                reasons.append("executor produced no file changes")
+            if task.requires_changes:
+                checks.append({"name": "changed_files_present", "ok": bool(paths), "count": len(paths)})
+                if not paths:
+                    reasons.append("executor produced no file changes")
+            else:
+                checks.append({"name": "execution_only_worktree_clean", "ok": not paths, "count": len(paths)})
+                if paths:
+                    reasons.append("unexpected_changes_in_execution_only_task")
             diffcheck = git(worktree, "diff", "--check")
             checks.append({"name": "git_diff_check", "ok": diffcheck.returncode == 0})
             if diffcheck.returncode != 0:
@@ -539,9 +546,13 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
             "summary": "Bounded engineering execution completed and is ready for human review." if state == "READY_FOR_OWNER" else "Execution completed but one or more required checks failed.",
             "reasons": reasons, "changed_paths": paths, "checks": checks, "duration_seconds": duration,
             "executor_returncode": executor.returncode, "executor_termination_reason": executor_reason,
+            "requires_changes": task.requires_changes,
             "owner_next_action": (
-                f"Review `{worktree}` and `{run_dir / 'report.md'}`. If acceptable, run `python3 -m ai_workforce.ai_eng_001.cli approve {shlex.quote(run_id)}` from the arvectum-company checkout."
-                if state == "READY_FOR_OWNER" else "Inspect the report/logs. Correct the task or environment; do not promote this worktree."
+                (
+                    f"Review `{worktree}` and `{run_dir / 'report.md'}`. If acceptable, run `python3 -m ai_workforce.ai_eng_001.cli approve {shlex.quote(run_id)}` from the arvectum-company checkout."
+                    if task.requires_changes
+                    else "Review the execution report and external/runtime artifacts. This execution-only run has no git candidate to promote."
+                ) if state == "READY_FOR_OWNER" else "Inspect the report/logs. Correct the task or environment; do not promote this worktree."
             ),
         }
         status(state, reason=executor_reason, returncode=executor.returncode,
@@ -568,6 +579,8 @@ def approve_run(run_id: str, config: Config, push: bool = False) -> dict[str, An
     report = json.loads(report_path.read_text(encoding="utf-8"))
     if report.get("state") != "READY_FOR_OWNER":
         raise AgentError(f"run is not READY_FOR_OWNER: {report.get('state')}")
+    if not report.get("requires_changes", True):
+        raise AgentError("execution-only run has no git changes to approve")
     worktree = Path(report["worktree"])
     if not worktree.exists():
         raise AgentError("worktree no longer exists")

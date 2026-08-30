@@ -11,6 +11,7 @@
   "test_commands": ["python3 -m pytest -q"],
   "allowed_paths": [],
   "forbidden_paths": [".git", ".env"],
+  "requires_changes": true,
   "requires_owner_decision": false,
   "external_customer_effect": false,
   "material_spend": false,
