@@ -283,6 +283,7 @@ def execute_task(task_path: Path, config: Config) -> dict[str, Any]:
             cmd += ["--model", config.executor_model]
         if config.executor_agent:
             cmd += ["--agent", config.executor_agent]
+        cmd += ["--dir", str(worktree)]
         cmd += [prompt]
         env = os.environ.copy()
         env.pop(config.llm_api_key_env, None)
