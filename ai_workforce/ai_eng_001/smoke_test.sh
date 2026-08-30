@@ -17,7 +17,7 @@ cat > "$TMP/task.json" <<JSON
   "repository": "$SMOKE_REPO",
   "objective": "Change only smoke.txt so its complete content is exactly: AI-ENG-001 OK followed by a newline.",
   "acceptance": ["smoke.txt contains exactly AI-ENG-001 OK and a newline"],
-  "test_commands": ["test \"$(cat smoke.txt)\" = \"AI-ENG-001 OK\""],
+  "test_commands": ["grep -qx 'AI-ENG-001 OK' smoke.txt"],
   "allowed_paths": ["smoke.txt"],
   "forbidden_paths": [".git", ".env"],
   "requires_owner_decision": false,
