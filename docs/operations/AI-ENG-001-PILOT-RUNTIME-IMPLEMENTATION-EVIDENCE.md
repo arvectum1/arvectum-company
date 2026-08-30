@@ -7,10 +7,10 @@ Implemented artifacts:
 
 - `ai_workforce/ai_eng_001/core.py` — task admission, protected-boundary checks, worktree isolation, OpenCode invocation, optional manager LLM, validation, reporting, approval and watch queue;
 - `ai_workforce/ai_eng_001/cli.py` — `doctor`, `run`, `enqueue`, `status`, `approve`, `watch`;
-- `config/ai-eng-001.example.json` — runtime config;
-- `config/task.example.json` — bounded task contract;
-- `deploy/com.arvectum.ai-eng-001.plist.template` — launchd service template;
-- `deploy/install_macos.sh` and `deploy/uninstall_macos.sh` — Mac mini deployment helpers;
+- `ai_workforce/ai_eng_001/config.example.json` — runtime config;
+- `ai_workforce/ai_eng_001/task.example.json` — bounded task contract;
+- `ai_workforce/ai_eng_001/com.arvectum.ai-eng-001.plist.template` — launchd service template;
+- `ai_workforce/ai_eng_001/install_macos.sh` and `ai_workforce/ai_eng_001/uninstall_macos.sh` — Mac mini deployment helpers;
 - `tests/test_ai_eng_001.py` — runner mechanics regression tests;
 - `docs/operations/AI-ENG-001-RUNTIME.md` — operator/runtime reference.
 
