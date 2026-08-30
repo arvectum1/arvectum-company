@@ -1,0 +1,11 @@
+{
+  "state_dir": "~/.local/share/arvectum/ai-eng-001",
+  "executor_cmd": ["opencode", "run"],
+  "executor_model": null,
+  "executor_agent": null,
+  "llm_mode": "none",
+  "llm_base_url": null,
+  "llm_model": null,
+  "llm_api_key_env": "AI_ENG_LLM_API_KEY",
+  "watch_interval_seconds": 30
+}
