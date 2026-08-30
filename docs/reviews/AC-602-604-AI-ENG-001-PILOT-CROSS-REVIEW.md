@@ -1,7 +1,7 @@
 # AC-602…AC-604 — AI-ENG-001 Pilot Cross-Review
 
 Status: `Complete`
-Version: `1.0.0`
+Version: `1.0.1`
 Date: `2026-08-30`
 Iterations: `7 of maximum 7`
 Result: `PASS for bounded pilot implementation`
@@ -11,8 +11,7 @@ Reviewed artifacts:
 - `docs/business/AC-602-POS-004-BUSINESS-CASE.md`;
 - `docs/organization/AC-603-AI-ENG-001-ASSIGNMENT-RUNTIME-BOUNDARY.md`;
 - `docs/operations/AC-604-AI-ENG-001-QUALITY-COST-RISK-GATES.md`;
-- `ai_workforce/ai_eng_001/**`;
-- `deploy/**ai-eng-001*`;
+- `ai_workforce/ai_eng_001/**` including runtime-local config/task examples and Mac deployment helpers;
 - `tests/test_ai_eng_001.py`.
 
 ## 1 — Business/workload reality
@@ -29,7 +28,7 @@ PASS. Autonomous execution stops before commit/push/merge/release/deploy. Commit
 
 ## 4 — Security and secrets
 
-PASS for pilot design, not OS-level sandbox assurance. The runtime does not require raw reusable secrets for the default path, excludes protected tasks, and removes a separate manager-LLM key from the coding executor environment. The review records that process-level instructions are not a substitute for OS isolation.
+PASS for pilot design, not OS-level sandbox assurance. The runtime does not require raw reusable secrets for the default path, excludes protected tasks, and removes a separate manager-LLM key from the coding executor environment. Process-level instructions are not a substitute for OS isolation.
 
 ## 5 — Evidence and quality
 
