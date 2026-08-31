@@ -1,127 +1,126 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.53.0`
+Версия: `0.54.0`
 Создано: `2026-08-19`
-Обновлено: `2026-08-30`
+Обновлено: `2026-08-31`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — Supervised AI Position pilot — external/signal hardening promoted / Mac mini deployment verification pending`
+Текущее параллельное M6-действие: `AC-605 — PASS for supervised autonomous Position pilot mechanics; Product TLS/source blocker now owns immediate engineering attention`
 
 ## 1. Модель публикации
 
-Эта редакция `0.53.0` сохраняет полное содержание дорожной карты `0.52.0` по immutable git blob и фиксирует фактический результат первого чистого queued execution-only run, а также последующее generic hardening AI-ENG-001.
+Эта редакция `0.54.0` сохраняет полное содержание дорожной карты `0.53.0` по immutable git blob и фиксирует первый substantive real Product task, завершённый persistent AI-ENG-001 без Owner execution intervention после enqueue.
 
 Предыдущая редакция:
 
-- версия: `0.52.0`;
+- версия: `0.53.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `cda45ef3375b35e5877127239c422ccdd58f0756`.
+- immutable git blob SHA: `5cb8a68e28a2d3ca4bb5d783f02787f322522cd2`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, first AC-605 hang evidence, runtime-observability promotion, execution-only promotion, Owner intervention evidence, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, runtime-observability promotion, execution-only promotion, external/signal hardening, prior negative runs, Owner intervention evidence, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. First clean queued execution-only run — BLOCKED before Product mutation
+## 2. First substantive autonomous Product execution — AI-ENG PASS / Product BLOCKED
+
+Task:
+
+`AC605-MACMINI-PROCUREMENT-E2E-003`
 
 Run:
 
-`20260830T135816Z-AC605-ARV001-COMPRESSION-EXEC-003`
+`20260831T075310Z-AC605-MACMINI-PROCUREMENT-E2E-003`
 
 Product baseline:
 
-`arvectum1/tender-agent@7f63a38227c8cc009c722da820caf3cd05493bd9`
+`arvectum1/tender-agent@ddf8d2ea4ce785467d683136a1a995ce876a20d8`
 
-Observed terminal state:
+AI-ENG terminal state:
 
-`BLOCKED`
+`READY_FOR_OWNER`
 
-Evidence:
+Runtime evidence:
 
-- executor exited `0`;
-- AI-ENG observability and post-executor phases worked;
-- Git worktree remained clean;
-- `requires_changes=false` semantics worked;
-- zero Owner execution interventions occurred;
-- candidate pre-hashes matched the expected immutable values;
-- compression itself was **not run**;
-- OpenCode rejected the exact required candidate root through its `external_directory` permission boundary;
-- all candidate hashes remained unchanged;
-- no Product code, accepted evidence, Product Owner state, independent-review state or freeze state changed.
+- duration `79.576s`;
+- executor return code `0`;
+- termination reason none;
+- `changed_paths=[]`;
+- `execution_only_worktree_clean` PASS;
+- Owner execution interventions after enqueue `0`.
 
-This result is a runtime capability blocker, not an ARV-001 Product failure.
+The persistent watch claimed and supervised the queued real Product task, preserved the exact Product baseline and Git cleanliness, collected deterministic evidence and returned the human review gate without execution correction from the Owner.
 
-## 3. Foreground supervisor orphan evidence
+Canonical evidence:
 
-During post-promotion verification an accidentally real foreground normal-smoke run was externally terminated by its bootstrap wrapper.
+`docs/operations/AC-605-AI-ENG-001-FIRST-AUTONOMOUS-E2E-EVIDENCE.md`
 
-The foreground AI-ENG supervisor disappeared while its separately-sessioned OpenCode executor survived as an orphan (`PPID=1`). The persistent launchd watch was not the parent and could not recover that executor.
+## 3. Product outcome is not business/E2E success
 
-Bounded cleanup affected only the orphan executor process group and preserved prior run evidence.
+The Product runner exited `20` with:
 
-This established a second generic runtime gap: SIGTERM to a foreground supervisor had to enter the same bounded executor cleanup path as KeyboardInterrupt/idle/hard-timeout handling.
+`MACMINI_AUTONOMOUS_PROCUREMENT_E2E_BLOCKED`
 
-## 4. External-directory and supervisor-signal hardening — promoted
+Code:
 
-Remediation contract:
+`search_not_actionable`
 
-`docs/operations/AC-605-AI-ENG-001-EXTERNAL-AND-SIGNAL-HARDENING.md`
+Observed boundary:
 
-Implementation branch:
+- public EIS search outcome `source_unavailable`;
+- parser status `blocked`;
+- error `TLS verification failed`;
+- no procurement selection;
+- no documentation/analysis run;
+- no local LLM runtime evidence;
+- no HTML report.
 
-`work/ai-eng-external-supervisor-hardening`
+This is a real Product/source-runtime blocker and MUST NOT be rewritten as AI-ENG failure or as successful Tender Agent business completion.
 
-Implementation head:
+## 4. AC-605 decision
 
-`aad352935feb2bb6eb21dcf094974c7fb87fb961`
+`AC-605 — Supervised AI Position pilot` is now:
 
-Pull request:
+**`Complete / PASS — supervised autonomous Position execution mechanics proven on a real Product task`.**
 
-`#4 — AC-605 — harden external-directory access and supervisor shutdown`
+The proof is bounded:
 
-Exact-head GitHub CI:
+- real Product workload reached a real external-source boundary;
+- zero Owner execution interventions occurred after enqueue;
+- fail-closed Product behavior was preserved;
+- no automatic repair/retry/scope expansion occurred;
+- no Git or external business-effect mutation occurred.
 
-- workflow: `AI-ENG-001 CI`;
-- run: `33316389557`;
-- compile PASS;
-- existing and new unit/integration regressions PASS;
-- shell syntax PASS.
+AC-605 does **not** prove:
 
-PR #4 merged to canonical main.
+- Tender Agent end-to-end report generation;
+- LLM business usefulness;
+- procurement/customer readiness;
+- profitability;
+- legal/compliance readiness;
+- autonomous external-effect authority.
 
-Merge commit:
+## 5. Business-first priority correction
 
-`f24e1787c5c00a2464910fa178f90a135c40162d`
+Do not continue adding AI-ENG preflight gates merely to repeat the same runtime proof.
 
-Promotion evidence:
+The immediate engineering blocker belongs to Tender Agent/Product runtime:
 
-`docs/operations/AC-605-AI-ENG-001-EXTERNAL-AND-SIGNAL-PROMOTION-EVIDENCE.md`
+`EIS public search → TLS verification failed`.
 
-Promoted capability now includes:
+Company priority therefore returns to Product value: diagnose/fix the Tender Agent source TLS path through the Product repository and then continue the Product E2E workflow.
 
-- CLI `run` and `watch` supervised SIGINT/SIGTERM handling;
-- bounded cleanup of only the AI-ENG-created executor process group;
-- opt-in task field `external_directories`;
-- rejection of broad roots (`/`, `/tmp`, `/private/tmp`, home, Desktop root, Documents root);
-- exact narrow OpenCode external-directory permission injected only into the executor process;
-- OpenCode 1.x / 2.x permission syntax selection by detected version;
-- no blanket `--auto` mode;
-- fail-closed conflict with pre-existing inline OpenCode config;
-- durable external-directory/signal evidence in run reports.
+The AI-ENG `external_directories` capability remains separate technical debt with status:
 
-## 5. Product priority correction
+`NOT VERIFIED`.
 
-ARV-001 Product work is no longer blocked on AC-605 infrastructure iteration. The Owner may continue the current ARV-001 compression/review loop manually while AI-ENG hardening is verified separately.
-
-Do not create additional runtime work merely to automate a short one-off Product command. The next real autonomous pilot should preferably be a repository-contained engineering task where the automation is expected to reduce Owner workload materially.
-
-The completed BLOCKED ARV-001 queued run remains valid AC-605 evidence and must not be rewritten as a Product failure.
+It was not needed for the successful repository-contained AC-605 proof and should not block Product delivery.
 
 ## 6. M6 current status
 
 `M6 — First real AI-held Position proven economically and operationally` remains:
 
-**`Current / bounded early admission`.**
+**`Current / execution mechanics proven; continuity/economic proof remains`.**
 
 | ID | Work item | Status |
 |---|---|---|
@@ -129,31 +128,36 @@ The completed BLOCKED ARV-001 queued run remains valid AC-605 evidence and must 
 | `AC-602` | Position business case and unit-economics/workload evidence | `Complete / PASS — pilot baseline` |
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
-| `AC-605` | Supervised AI Position pilot | `Current / external+signal hardening promoted — Mac mini verification pending` |
-| `AC-606` | Human/software fallback and executor-replacement proof | `Planned / blocked on successful real AC-605 Product-task evidence` |
-| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / negative and zero-intervention evidence accumulating; blocked on AC-605/606 completion` |
+| `AC-605` | Supervised AI Position pilot | `Complete / PASS — real Product task, READY_FOR_OWNER, zero Owner interventions` |
+| `AC-606` | Human/software fallback and executor-replacement proof | `Available / not yet executed; business-first priority may defer behind Product TLS blocker` |
+| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / positive zero-intervention evidence now available; final review blocked on AC-606 and additional Product-value evidence` |
 
-## 7. AC-605 exact next step
+## 7. Exact next steps
 
-After the current manual Product work reaches a convenient pause:
+Company/Product sequencing now is:
 
-1. fast-forward the Owner-controlled Mac mini `arvectum-company` checkout to current canonical `main`;
-2. restart the AI-ENG launchd watch so it loads the promoted supervised adapter;
-3. run `doctor`;
-4. run synthetic hang smoke;
-5. run synthetic normal smoke with `AI_ENG_SMOKE_FAKE_EXECUTOR=1`;
-6. run one narrow external-directory synthetic smoke against a disposable temp child directory and verify no interactive OpenCode permission request;
-7. only after those gates pass, assign the next real repository-contained engineering task to AI-ENG-001.
+1. **Tender Agent owns the immediate engineering next step:** diagnose and correct the Mac mini EIS TLS verification path without weakening TLS verification, bypassing source controls or introducing cloud dependence.
+2. After the Product source path is corrected, re-run the same one-command Product E2E through AI-ENG when that re-run is expected to produce new Product evidence rather than merely repeat runtime mechanics.
+3. Execute `AC-606` when it no longer competes with higher-value Product delivery work.
+4. Use the accumulated AC-605 evidence in `AC-607` to evaluate Owner workload, execution quality, cost, replacement/continuity and whether AI-ENG materially reduces work rather than merely shifting it into supervision.
 
-A new autonomous run must again measure Owner execution interventions and duration. Technical `READY_FOR_OWNER` remains a human review gate, not Product/customer/business approval.
+## 8. Owner workload evidence
 
-## 8. Authority boundary remains unchanged
+Relevant AC-605 evidence now includes both negative and positive cases:
 
-The runtime changes do not activate AM-3 or AM-4 and do not grant autonomous authority to commit, push, merge, release, deploy, change Product Owner decisions, authorize independent review, retry governed provider acceptance, perform EIS/provider/RAG calls, mutate accepted/frozen evidence, mutate production DB, create customer external effects, expand scope, or spend money.
+- first non-progressing executor required one manual recovery intervention; duration was not measured;
+- subsequent fail-closed blocked runs preserved state and exposed runtime/environment defects;
+- first substantive real Product run reached `READY_FOR_OWNER` with `0` Owner execution interventions after enqueue and completed in `79.576s`.
 
-Explicit narrow local filesystem permission is an execution capability, not Organizational Authority.
+This is positive operational evidence but is not yet sufficient to claim economic success. Bootstrap/setup effort and repeated infrastructure debugging must be included honestly in AC-607 rather than omitted from the cost calculation.
 
-## 9. M5 remains open
+## 9. Authority boundary remains unchanged
+
+The successful AC-605 run does not activate AM-3 or AM-4 and does not grant autonomous authority to commit, push, merge, release, deploy, change Product Owner decisions, authorize independent review, mutate accepted/frozen evidence, perform procurement submission, contact suppliers, log into ETP, use a digital signature, bypass captcha, create customer external effects, expand scope or spend money.
+
+`READY_FOR_OWNER` remains a human review gate, not approval.
+
+## 10. M5 remains open
 
 `M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with the existing customer evidence gates preserved from the previous roadmap chain.
 
