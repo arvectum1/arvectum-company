@@ -1,126 +1,119 @@
 # Каноническая дорожная карта Arvectum Company
 
 Статус: `Active`
-Версия: `0.54.0`
+Версия: `0.55.0`
 Создано: `2026-08-19`
-Обновлено: `2026-08-31`
+Обновлено: `2026-09-01`
 Владелец: `ООО «Арвектум»`
 Репозиторий: `arvectum1/arvectum-company`
 
 Текущее M5-действие: `AC-505 — Supervised real-operation proof — external evidence wait`
-Текущее параллельное M6-действие: `AC-605 — PASS for supervised autonomous Position pilot mechanics; Product TLS/source blocker now owns immediate engineering attention`
+Текущее M6-действие: `AC-606 — Human/software fallback and executor-replacement proof — next Company execution step`
 
 ## 1. Модель публикации
 
-Эта редакция `0.54.0` сохраняет полное содержание дорожной карты `0.53.0` по immutable git blob и фиксирует первый substantive real Product task, завершённый persistent AI-ENG-001 без Owner execution intervention после enqueue.
+Эта редакция `0.55.0` сохраняет полное содержание дорожной карты `0.54.0` по immutable git blob и фиксирует закрытие Product TLS/source blocker и успешный реальный Tender Agent E2E на Mac mini.
 
 Предыдущая редакция:
 
-- версия: `0.53.0`;
+- версия: `0.54.0`;
 - путь: `docs/roadmap/ROADMAP.md`;
-- immutable git blob SHA: `5cb8a68e28a2d3ca4bb5d783f02787f322522cd2`.
+- immutable git blob SHA: `dac57ba7fd2bd2f189546b9a6093fd62f7bdd993`.
 
-Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-604 state, runtime-observability promotion, execution-only promotion, external/signal hardening, prior negative runs, Owner intervention evidence, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
+Полный master-index M0–M9, M5/AC-505 evidence state, AC-507 bounded economic direction, AC-601…AC-605 state, runtime-observability promotion, execution-only promotion, Company priority hierarchy, AC-108 path и Company/Product/Arvectum OS boundaries сохраняются по этой immutable reference, если прямо не изменены ниже.
 
-## 2. First substantive autonomous Product execution — AI-ENG PASS / Product BLOCKED
+## 2. Tender Agent Product E2E — real Mac mini PASS
 
-Task:
+Issue:
 
-`AC605-MACMINI-PROCUREMENT-E2E-003`
+`arvectum1/tender-agent#19`
 
-Run:
+Canonical integration PR:
 
-`20260831T075310Z-AC605-MACMINI-PROCUREMENT-E2E-003`
+`#21 — E2E: Mac mini autonomous procurement discovery to report`
 
-Product baseline:
+Superseded draft PR:
 
-`arvectum1/tender-agent@ddf8d2ea4ce785467d683136a1a995ce876a20d8`
+`#20`
 
-AI-ENG terminal state:
+Accepted source head:
 
-`READY_FOR_OWNER`
+`155f97e563206993f2a315b4e47c9d1391538781`
 
-Runtime evidence:
+Merge commit on Tender Agent `main`:
 
-- duration `79.576s`;
-- executor return code `0`;
-- termination reason none;
-- `changed_paths=[]`;
-- `execution_only_worktree_clean` PASS;
-- Owner execution interventions after enqueue `0`.
+`b07d4eff59c5657dfd6f261437330bfb42b49828`
 
-The persistent watch claimed and supervised the queued real Product task, preserved the exact Product baseline and Git cleanliness, collected deterministic evidence and returned the human review gate without execution correction from the Owner.
+Runtime acceptance evidence:
 
-Canonical evidence:
+`docs/operations/MACMINI_AUTONOMOUS_PROCUREMENT_E2E_ACCEPTANCE.md`
 
-`docs/operations/AC-605-AI-ENG-001-FIRST-AUTONOMOUS-E2E-EVIDENCE.md`
+Observed real flow:
 
-## 3. Product outcome is not business/E2E success
+`public EIS search → deterministic relevance selection → public documentation intake → completeness gate → local LLM analysis → HTML report`
 
-The Product runner exited `20` with:
+Acceptance facts:
 
-`MACMINI_AUTONOMOUS_PROCUREMENT_E2E_BLOCKED`
+- focused final regression suite: `54 passed, 9 warnings`;
+- repository secret scan: `clean`;
+- Product transport: `PRODUCT_TRANSPORT_PASS`;
+- TLS: `CERT_REQUIRED`, hostname verification enabled, TLS >= 1.2;
+- source-controlled direct route: `true`;
+- selected real procurement: `0373100107026000032`;
+- relevance threshold `20`: passed;
+- run ID: `toa-run-20260901074713-d6bae8`;
+- documentation: `5 files downloaded`;
+- analysis mode: `llm_tender_operator_provider`;
+- local LLM invoked: `true`;
+- deterministic fallback: `false`;
+- LLM evidence event: `llm_analysis_completed`;
+- final marker: `MACMINI_AUTONOMOUS_PROCUREMENT_E2E_REPORT_READY`;
+- HTML report SHA256: `6ca3f39b51ee90adb0f5cce626dae504f7b08c87d6398a100bf1daff1a8ec9bf`;
+- CI run `#278`: `SUCCESS` on exact accepted head before merge.
 
-Code:
+## 3. Previous Product blocker is resolved
 
-`search_not_actionable`
-
-Observed boundary:
-
-- public EIS search outcome `source_unavailable`;
-- parser status `blocked`;
-- error `TLS verification failed`;
-- no procurement selection;
-- no documentation/analysis run;
-- no local LLM runtime evidence;
-- no HTML report.
-
-This is a real Product/source-runtime blocker and MUST NOT be rewritten as AI-ENG failure or as successful Tender Agent business completion.
-
-## 4. AC-605 decision
-
-`AC-605 — Supervised AI Position pilot` is now:
-
-**`Complete / PASS — supervised autonomous Position execution mechanics proven on a real Product task`.**
-
-The proof is bounded:
-
-- real Product workload reached a real external-source boundary;
-- zero Owner execution interventions occurred after enqueue;
-- fail-closed Product behavior was preserved;
-- no automatic repair/retry/scope expansion occurred;
-- no Git or external business-effect mutation occurred.
-
-AC-605 does **not** prove:
-
-- Tender Agent end-to-end report generation;
-- LLM business usefulness;
-- procurement/customer readiness;
-- profitability;
-- legal/compliance readiness;
-- autonomous external-effect authority.
-
-## 5. Business-first priority correction
-
-Do not continue adding AI-ENG preflight gates merely to repeat the same runtime proof.
-
-The immediate engineering blocker belongs to Tender Agent/Product runtime:
+Roadmap `0.54.0` correctly recorded the then-current blocker:
 
 `EIS public search → TLS verification failed`.
 
-Company priority therefore returns to Product value: diagnose/fix the Tender Agent source TLS path through the Product repository and then continue the Product E2E workflow.
+That blocker is now **resolved** for the accepted Mac mini Product contour.
 
-The AI-ENG `external_directories` capability remains separate technical debt with status:
+The repository now proves verified public EIS transport, source-controlled direct routing, real procurement selection, public-document intake, local LLM execution and report generation without weakening TLS or introducing cloud dependence.
 
-`NOT VERIFIED`.
+The earlier blocked run remains valid historical negative evidence and must not be rewritten; this revision records the later successful correction and acceptance.
 
-It was not needed for the successful repository-contained AC-605 proof and should not block Product delivery.
+## 4. What the PASS proves — and what it does not
 
-## 6. M6 current status
+The accepted Product contour proves an autonomous **read-only intelligence loop** on the Mac mini.
+
+It proves:
+
+- real external public-source reachability;
+- deterministic procurement selection;
+- real public-document retrieval and completeness progression;
+- controlled local LLM invocation without fallback;
+- human-facing HTML report generation;
+- fail-closed safety and source/TLS controls retained.
+
+It does **not** authorize or prove:
+
+- procurement application submission;
+- ETP login;
+- captcha bypass;
+- digital signature use;
+- supplier/customer external messaging;
+- legally final autonomous decisions;
+- autonomous financial commitments;
+- AM-3 or AM-4 authority.
+
+ARV-001 remains separately `CLOSED / FROZEN`; the E2E track did not mutate its accepted evidence baseline.
+
+## 5. M6 status after Product E2E PASS
 
 `M6 — First real AI-held Position proven economically and operationally` remains:
 
-**`Current / execution mechanics proven; continuity/economic proof remains`.**
+**`Current / execution mechanics and substantive Product-value evidence proven; continuity/economic proof remains`.**
 
 | ID | Work item | Status |
 |---|---|---|
@@ -129,36 +122,30 @@ It was not needed for the successful repository-contained AC-605 proof and shoul
 | `AC-603` | Assignment, authority, runtime, tools and data boundary | `Complete / PASS — AI-ENG-001 pilot implemented` |
 | `AC-604` | Quality/evaluation, cost and risk gates | `Complete / PASS — pilot gates` |
 | `AC-605` | Supervised AI Position pilot | `Complete / PASS — real Product task, READY_FOR_OWNER, zero Owner interventions` |
-| `AC-606` | Human/software fallback and executor-replacement proof | `Available / not yet executed; business-first priority may defer behind Product TLS blocker` |
-| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / positive zero-intervention evidence now available; final review blocked on AC-606 and additional Product-value evidence` |
+| `AC-606` | Human/software fallback and executor-replacement proof | `Available / NEXT Company M6 execution step` |
+| `AC-607` | Value, Owner-workload, module-reuse and risk review | `Planned / now has substantive Product E2E evidence; execute after AC-606` |
 
-## 7. Exact next steps
+## 6. Exact next steps
 
-Company/Product sequencing now is:
+Company sequencing is now:
 
-1. **Tender Agent owns the immediate engineering next step:** diagnose and correct the Mac mini EIS TLS verification path without weakening TLS verification, bypassing source controls or introducing cloud dependence.
-2. After the Product source path is corrected, re-run the same one-command Product E2E through AI-ENG when that re-run is expected to produce new Product evidence rather than merely repeat runtime mechanics.
-3. Execute `AC-606` when it no longer competes with higher-value Product delivery work.
-4. Use the accumulated AC-605 evidence in `AC-607` to evaluate Owner workload, execution quality, cost, replacement/continuity and whether AI-ENG materially reduces work rather than merely shifting it into supervision.
+1. **Execute `AC-606`** — prove bounded human/software fallback and executor replacement without breaking the governed Position contract.
+2. **Execute `AC-607`** using the accumulated AC-605 and Tender Agent E2E evidence: Owner workload, execution quality, cost, replacement/continuity, module reuse and whether AI-ENG materially reduces work rather than merely shifting it into supervision.
+3. Keep `M5 / AC-505` open in parallel until real external/customer evidence becomes available; do not fabricate it from Product runtime evidence.
+4. Treat the merged Tender Agent Mac mini read-only E2E as a Product baseline for subsequent product-value/source expansion, without automatically widening Company autonomy or external-effect authority.
 
-## 8. Owner workload evidence
+## 7. Owner workload and economic interpretation
 
-Relevant AC-605 evidence now includes both negative and positive cases:
+The new Product E2E adds materially stronger evidence than the earlier TLS-blocked run: the full intelligence loop reached a real human-facing report with a local LLM and no deterministic fallback.
 
-- first non-progressing executor required one manual recovery intervention; duration was not measured;
-- subsequent fail-closed blocked runs preserved state and exposed runtime/environment defects;
-- first substantive real Product run reached `READY_FOR_OWNER` with `0` Owner execution interventions after enqueue and completed in `79.576s`.
+However, M6 is not yet an economic PASS. AC-607 must count bootstrap/setup effort, debugging time, supervision cost and replacement/fallback behavior alongside the successful zero-intervention execution evidence already recorded under AC-605.
 
-This is positive operational evidence but is not yet sufficient to claim economic success. Bootstrap/setup effort and repeated infrastructure debugging must be included honestly in AC-607 rather than omitted from the cost calculation.
+## 8. Authority boundary remains unchanged
 
-## 9. Authority boundary remains unchanged
+Neither the successful Tender Agent E2E nor AC-605 activates AM-3/AM-4 or grants authority to commit/push/merge/release/deploy autonomously, change Product Owner decisions, mutate accepted evidence, perform procurement submission, contact suppliers/customers, log into ETP, use digital signatures, bypass captcha, create external business effects, expand scope or spend money without the existing governed authority path.
 
-The successful AC-605 run does not activate AM-3 or AM-4 and does not grant autonomous authority to commit, push, merge, release, deploy, change Product Owner decisions, authorize independent review, mutate accepted/frozen evidence, perform procurement submission, contact suppliers, log into ETP, use a digital signature, bypass captcha, create customer external effects, expand scope or spend money.
+## 9. M5 remains open
 
-`READY_FOR_OWNER` remains a human review gate, not approval.
+`M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait`.
 
-## 10. M5 remains open
-
-`M5 — First real governed Company operating contour proven` remains `Current` and `AC-505` remains `Current / external evidence wait` with the existing customer evidence gates preserved from the previous roadmap chain.
-
-M5 and M6 may continue to produce independent evidence in parallel and MUST NOT borrow or fabricate evidence from one another.
+M5 and M6 continue to produce independent evidence in parallel and MUST NOT borrow or fabricate evidence from one another.
