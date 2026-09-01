@@ -1,11 +1,13 @@
 # AC-606 — AI-ENG-001 continuity, fallback and executor-replacement proof
 
 Status: `Complete / PASS — bounded continuity mechanics proven`
-Version: `1.0.0`
+Version: `1.0.1`
 Date: `2026-09-01`
 Owner: `ООО «Арвектум»`
 Position: `POS-004 — Engineering & Release Lead`
 Principal: `AI-ENG-001`
+Canonical PR: `#5`
+Canonical merge: `fe8fca259794eef9af640e4b1baa66f8be3946f7`
 
 ## 1. Purpose
 
@@ -33,11 +35,19 @@ Regression:
 
 `tests/test_ai_eng_001_continuity.py`
 
-CI workflow now executes both the full AI-ENG unit/integration suite and an explicit standalone continuity probe.
+CI workflow executes both the full AI-ENG unit/integration suite and an explicit standalone continuity probe.
 
-Accepted branch evidence head:
+Accepted implementation/probe CI head:
 
 `6846fe682adbfc50c4e405e44091ff3ac0c8e7f0`
+
+Final accepted PR head:
+
+`facfa9bd93ae5674f1c23cbd95acdb876c744f92`
+
+Canonical merge on `main`:
+
+`fe8fca259794eef9af640e4b1baa66f8be3946f7`
 
 GitHub Actions:
 
@@ -49,6 +59,8 @@ GitHub Actions:
 - unit/integration tests: `17 tests / PASS`;
 - explicit `AC-606 continuity probe`: PASS;
 - shell syntax checks: PASS.
+
+The final PR-head delta after the accepted code/CI head is evidence/documentation only and does not alter continuity mechanics.
 
 ## 4. Explicit continuity evidence
 
@@ -99,6 +111,6 @@ AC-606 does not change AC-603 authority:
 
 `AC-606 — Complete / PASS`.
 
-The required bounded continuity mechanics are now proven: fail-closed primary failure, explicit human recovery boundary, attributable resubmission, replacement executor success, unchanged baseline/source state, unchanged authority, and no automatic promotion.
+The required bounded continuity mechanics are now proven and merged to canonical `main`: fail-closed primary failure, explicit human recovery boundary, attributable resubmission, replacement executor success, unchanged baseline/source state, unchanged authority, and no automatic promotion.
 
 The next M6 step is `AC-607 — Value, Owner-workload, module-reuse and risk review` using AC-605 real Product evidence, the successful Tender Agent Mac mini E2E evidence, and this AC-606 continuity proof.
