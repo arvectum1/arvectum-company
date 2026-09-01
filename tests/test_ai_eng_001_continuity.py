@@ -12,7 +12,7 @@ class TestAIEng001Continuity(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             result = run_continuity_probe(Path(td))
 
-        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["status"], "PASS", result)
         self.assertEqual(result["marker"], PASS_MARKER)
         self.assertEqual(result["principal"], "AI-ENG-001")
         self.assertEqual(result["position"], "POS-004")
@@ -25,7 +25,7 @@ class TestAIEng001Continuity(unittest.TestCase):
         )
         self.assertEqual(result["replacement"]["state"], "READY_FOR_OWNER")
         self.assertEqual(result["replacement"]["changed_paths"], ["continuity.txt"])
-        self.assertTrue(all(result["invariants"].values()))
+        self.assertTrue(all(result["invariants"].values()), result["invariants"])
 
 
 if __name__ == "__main__":
