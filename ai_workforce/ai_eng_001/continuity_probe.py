@@ -36,30 +36,30 @@ def _make_repository(root: Path) -> Path:
     return repo
 
 
-def _make_task(root: Path, repo: Path) -> Path:
-    task = root / "task.json"
+def _task_payload(task_id: str, repo: Path) -> dict[str, Any]:
+    return {
+        "id": task_id,
+        "repository": str(repo),
+        "objective": "Create continuity.txt containing exactly 'replacement-executor'.",
+        "acceptance": ["continuity.txt contains the replacement-executor marker"],
+        "test_commands": ["grep -q '^replacement-executor$' continuity.txt"],
+        "allowed_paths": ["continuity.txt"],
+        "forbidden_paths": [],
+        "requires_owner_decision": False,
+        "external_customer_effect": False,
+        "material_spend": False,
+        "requires_raw_secret": False,
+        "changes_company_product_os_boundary": False,
+        "changes_scope_or_commitment": False,
+        "requires_changes": True,
+        "timeout_seconds": 60,
+    }
+
+
+def _make_task(root: Path, repo: Path, task_id: str) -> Path:
+    task = root / f"{task_id}.json"
     task.write_text(
-        json.dumps(
-            {
-                "id": "AC606-CONTINUITY-PROBE",
-                "repository": str(repo),
-                "objective": "Create continuity.txt containing exactly 'replacement-executor'.",
-                "acceptance": ["continuity.txt contains the replacement-executor marker"],
-                "test_commands": ["grep -q '^replacement-executor$' continuity.txt"],
-                "allowed_paths": ["continuity.txt"],
-                "forbidden_paths": [],
-                "requires_owner_decision": False,
-                "external_customer_effect": False,
-                "material_spend": False,
-                "requires_raw_secret": False,
-                "changes_company_product_os_boundary": False,
-                "changes_scope_or_commitment": False,
-                "requires_changes": True,
-                "timeout_seconds": 60,
-            },
-            indent=2,
-        )
-        + "\n",
+        json.dumps(_task_payload(task_id, repo), indent=2) + "\n",
         encoding="utf-8",
     )
     return task
@@ -71,12 +71,21 @@ def _write_executor(path: Path, body: str) -> Path:
     return path
 
 
+def _same_task_contract(primary_task: Path, replacement_task: Path) -> bool:
+    primary = json.loads(primary_task.read_text(encoding="utf-8"))
+    replacement = json.loads(replacement_task.read_text(encoding="utf-8"))
+    primary.pop("id", None)
+    replacement.pop("id", None)
+    return primary == replacement
+
+
 def run_continuity_probe(root: Path | None = None) -> dict[str, Any]:
     """Prove fail-closed handoff and explicit executor replacement.
 
     The first executor fails without producing a promotable result. A human/owner
     decision is then represented by explicitly selecting a different executor
-    configuration and resubmitting the exact same bounded task. There is no
+    configuration and submitting a new attributable task record with the same
+    bounded objective, acceptance criteria and authority flags. There is no
     automatic failover and no authority expansion.
     """
 
@@ -89,7 +98,8 @@ def run_continuity_probe(root: Path | None = None) -> dict[str, Any]:
 
     try:
         repo = _make_repository(root)
-        task = _make_task(root, repo)
+        primary_task = _make_task(root, repo, "AC606-CONTINUITY-PRIMARY")
+        replacement_task = _make_task(root, repo, "AC606-CONTINUITY-REPLACEMENT")
         primary = _write_executor(root / "primary-executor.sh", "exit 17\n")
         replacement = _write_executor(
             root / "replacement-executor.sh",
@@ -99,25 +109,38 @@ def run_continuity_probe(root: Path | None = None) -> dict[str, Any]:
         baseline = _run_git(repo, "rev-parse", "HEAD")
 
         primary_result = execute_task(
-            task,
+            primary_task,
             Config(state_dir=root / "state-primary", executor_cmd=[str(primary)]),
         )
         after_primary_head = _run_git(repo, "rev-parse", "HEAD")
         after_primary_status = _run_git(repo, "status", "--porcelain")
 
         replacement_result = execute_task(
-            task,
+            replacement_task,
             Config(state_dir=root / "state-replacement", executor_cmd=[str(replacement)]),
         )
         after_replacement_head = _run_git(repo, "rev-parse", "HEAD")
         after_replacement_status = _run_git(repo, "status", "--porcelain")
 
-        replacement_worktree = Path(str(replacement_result.get("worktree", "")))
-        replacement_worktree_head = _run_git(replacement_worktree, "rev-parse", "HEAD")
-        replacement_run_dir = root / "state-replacement" / "runs" / str(replacement_result["run_id"])
+        replacement_worktree_value = replacement_result.get("worktree")
+        replacement_worktree = (
+            Path(str(replacement_worktree_value)) if replacement_worktree_value else None
+        )
+        replacement_worktree_head = (
+            _run_git(replacement_worktree, "rev-parse", "HEAD")
+            if replacement_worktree is not None and replacement_worktree.exists()
+            else None
+        )
+        replacement_run_dir = (
+            root
+            / "state-replacement"
+            / "runs"
+            / str(replacement_result.get("run_id", "missing-run"))
+        )
         approval_record_exists = (replacement_run_dir / "approval.json").exists()
 
         invariants = {
+            "task_contract_preserved": _same_task_contract(primary_task, replacement_task),
             "primary_failed_closed": primary_result.get("state") == "BLOCKED",
             "primary_nonzero_classified": primary_result.get("executor_termination_reason")
             == "executor_nonzero_exit",
@@ -139,21 +162,23 @@ def run_continuity_probe(root: Path | None = None) -> dict[str, Any]:
             "status": "PASS" if passed else "FAIL",
             "principal": PRINCIPAL_ID,
             "position": POSITION_ID,
-            "task_id": "AC606-CONTINUITY-PROBE",
+            "task_ids": ["AC606-CONTINUITY-PRIMARY", "AC606-CONTINUITY-REPLACEMENT"],
             "baseline_sha": baseline,
             "automatic_failover": False,
-            "owner_recovery_boundary": "explicit executor replacement after failed-closed primary run",
+            "owner_recovery_boundary": "explicit executor replacement and attributable task resubmission after failed-closed primary run",
             "authority_expanded": False,
             "primary": {
                 "state": primary_result.get("state"),
                 "termination_reason": primary_result.get("executor_termination_reason"),
                 "changed_paths": primary_result.get("changed_paths"),
+                "reasons": primary_result.get("reasons"),
             },
             "replacement": {
                 "state": replacement_result.get("state"),
                 "termination_reason": replacement_result.get("executor_termination_reason"),
                 "changed_paths": replacement_result.get("changed_paths"),
                 "checks": replacement_result.get("checks"),
+                "reasons": replacement_result.get("reasons"),
             },
             "invariants": invariants,
         }
